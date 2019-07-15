@@ -25,23 +25,28 @@ dependencyManagement {
 }
 
 configurations {
-    // for dependencies that are needed for development only
-    developmentOnly 
+    optional.extendsFrom compile
+
+    testCompile.extendsFrom optional
 }
 
 dependencies {
     // custom
     compile 'com.restfb:restfb:2.23.0'
 
+    testCompile "com.agorapulse:gru-http:0.8.2"
+
+    testCompile "io.micronaut:micronaut-http-server-netty"
+
     // generated
     annotationProcessor "io.micronaut:micronaut-inject-java"
     annotationProcessor "io.micronaut:micronaut-validation"
 
-    compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut:micronaut-inject"
     compile "io.micronaut:micronaut-validation"
     compile "io.micronaut:micronaut-runtime"
-    compile "io.micronaut:micronaut-http-server-netty"
+
+    optional "io.micronaut:micronaut-http"
 
     runtime "ch.qos.logback:logback-classic:1.2.3"
 
@@ -55,13 +60,11 @@ dependencies {
     testCompile "io.micronaut.test:micronaut-test-spock"
 }
 
-test.classpath += configurations.developmentOnly
-
 shadowJar {
     mergeServiceFiles()
 }
 
-run.classpath += configurations.developmentOnly
+run.classpath += configurations.optional
 run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
 
 tasks.withType(JavaCompile){

@@ -54,6 +54,10 @@ public class FacebookApplication {
         return new DefaultFacebookClient(accessToken, appSecret, apiVersion);
     }
 
+    public FacebookApplicationConfiguration getConfiguration() {
+        return configuration;
+    }
+
     @Override
     public String toString() {
         return "FacebookApplication[id:" + configuration.getId() + "]";
