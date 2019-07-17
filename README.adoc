@@ -1,0 +1,41 @@
+= Micronaut Facebook SDK
+
+Micronaut provider for https://restfb.com/[restfb Facebook Kava client].
+
+== Configuration
+
+The minimal configuration requires setting the application ID and secret:
+
+[source,yaml]
+----
+faceboook:
+    sdk:
+        app:
+            # required
+            id: 1234567890
+            secret: t0ps€cr€tHaSh
+            # optional
+            permissions:
+            - email
+            - user_photos
+            version: v2.9
+----
+
+You can delare multiple applications if needed.
+
+[source,yaml]
+----
+faceboook:
+    sdk:
+        apps:
+            foo:
+                # required
+                id: 1234567891
+                secret: t0ps€cr€tHaSh
+                # ...
+            bar:
+                # required
+                id: 1234567892
+                secret: t0ps€cr€tHaSh
+                # ...
+----

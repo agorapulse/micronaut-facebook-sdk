@@ -38,7 +38,7 @@ public class FacebookSignedRequestBinder implements TypedRequestArgumentBinder<F
 
         Optional<String> requestParameter = source.getParameters().get(SIGNED_REQUEST_PARAMETER_NAME, String.class);
         if (requestParameter.isPresent()) {
-            return () -> of(FacebookSignedRequest.parse(conf.getSecret(), requestParameter.get()));
+            return () -> of(application.parseSignedRequest(requestParameter.get()));
         }
 
         Optional<?> body = source.getBody();
@@ -46,7 +46,7 @@ public class FacebookSignedRequestBinder implements TypedRequestArgumentBinder<F
             Map params = (Map) body.get();
             Object bodyParameter = params.get(SIGNED_REQUEST_PARAMETER_NAME);
             if (bodyParameter != null) {
-                return () -> of(FacebookSignedRequest.parse(conf.getSecret(), bodyParameter.toString()));
+                return () -> of(application.parseSignedRequest(bodyParameter.toString()));
             }
         }
 

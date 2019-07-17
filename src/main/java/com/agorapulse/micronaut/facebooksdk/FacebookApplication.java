@@ -1,5 +1,6 @@
 package com.agorapulse.micronaut.facebooksdk;
 
+import com.agorapulse.micronaut.facebooksdk.fsr.FacebookSignedRequest;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Version;
@@ -54,8 +55,19 @@ public class FacebookApplication {
         return new DefaultFacebookClient(accessToken, appSecret, apiVersion);
     }
 
+    /**
+     * @return application configuration
+     */
     public FacebookApplicationConfiguration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * @param signature encoded signed request (param or cookie)
+     * @return parsed Facebook signed request
+     */
+    public FacebookSignedRequest parseSignedRequest(String signature) {
+        return FacebookSignedRequest.parse(getConfiguration().getSecret(), signature);
     }
 
     @Override
