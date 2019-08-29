@@ -18,9 +18,9 @@ public class FlowableConnection {
 
     public static <T> Flowable<T> create(FacebookClient client, String connection, Class<T> connectionType, Parameter... parameters) {
         return generate(() -> null, (String nextPage, Emitter<List<T>> emitter) -> {
-            Connection<T> conn = nextPage == null ?
-                    client.fetchConnection(connection, connectionType, parameters) :
-                    client.fetchConnectionPage(nextPage, connectionType);
+            Connection<T> conn = nextPage == null
+                    ? client.fetchConnection(connection, connectionType, parameters)
+                    : client.fetchConnectionPage(nextPage, connectionType);
 
             emitter.onNext(conn.getData());
 
