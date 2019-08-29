@@ -2,6 +2,13 @@
 
 Micronaut provider for https://restfb.com/[restfb Facebook Kava client].
 
+== Installation
+
+[source,groovy]
+----
+compile 'com.agorapulse:micronaut-facebook-sdk:0.1.0'
+----
+
 == Configuration
 
 The minimal configuration requires setting the application ID and secret:
@@ -39,3 +46,4 @@ faceboook:
                 secret: t0ps€cr€tHaSh
                 # ...
 ----
+
