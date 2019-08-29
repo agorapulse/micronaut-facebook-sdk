@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Extensions for {@link com.restfb.FacebookClient}.
  * <p>
- * For
+ * Designed to provide maximum compatibility with the former Grails plugin.
  */
 public class FacebookExtensions {
 

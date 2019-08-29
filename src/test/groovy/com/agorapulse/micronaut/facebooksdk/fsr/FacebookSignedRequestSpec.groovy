@@ -1,8 +1,9 @@
 package com.agorapulse.micronaut.facebooksdk.fsr
 
-import com.agorapulse.micronaut.facebooksdk.fsr.FacebookSignedRequest
+import groovy.transform.CompileDynamic
 import spock.lang.Specification
 
+@CompileDynamic
 class FacebookSignedRequestSpec extends Specification {
 
     public static final FacebookSignedRequest TEST_REQUEST = new FacebookSignedRequest(

@@ -8,7 +8,7 @@ public class FacebookSdkFactory {
 
     @EachBean(FacebookApplicationConfiguration.class)
     public FacebookApplication facebookApplication(FacebookApplicationConfiguration configuration) {
-        return new FacebookApplication(configuration);
+        return new DefaultFacebookApplication(configuration);
     }
 
 }

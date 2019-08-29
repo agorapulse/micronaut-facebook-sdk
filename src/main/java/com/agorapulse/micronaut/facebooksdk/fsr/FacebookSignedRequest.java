@@ -113,6 +113,7 @@ public class FacebookSignedRequest {
         }
     }
 
+    //CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -126,6 +127,7 @@ public class FacebookSignedRequest {
                 Objects.equals(issuedAt, that.issuedAt) &&
                 Objects.equals(userId, that.userId);
     }
+    //CHECKSTYLE:ON
 
     @Override
     public int hashCode() {

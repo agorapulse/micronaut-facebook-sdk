@@ -50,6 +50,6 @@ public class FacebookSignedRequestBinder implements TypedRequestArgumentBinder<F
             }
         }
 
-        return () -> source.getCookies().get(COOKIE_PREFIX + conf.getId(), String.class).map((sr) -> FacebookSignedRequest.parse(conf.getSecret(), sr));
+        return () -> source.getCookies().get(COOKIE_PREFIX + conf.getId(), String.class).map(sr -> FacebookSignedRequest.parse(conf.getSecret(), sr));
     }
 }

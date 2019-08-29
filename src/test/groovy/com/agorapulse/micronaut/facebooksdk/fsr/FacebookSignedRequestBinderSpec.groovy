@@ -3,12 +3,18 @@ package com.agorapulse.micronaut.facebooksdk.fsr
 import com.agorapulse.gru.Gru
 import com.agorapulse.gru.http.Http
 import com.agorapulse.micronaut.facebooksdk.FacebookApplication
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import io.micronaut.context.annotation.Property
 import io.micronaut.context.annotation.Requires
 import io.micronaut.context.env.Environment
 import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.*
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.Body
+import io.micronaut.http.annotation.Produces
+import io.micronaut.http.annotation.Consumes
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.Rule
@@ -18,6 +24,7 @@ import javax.annotation.Nullable
 import javax.inject.Inject
 
 @MicronautTest
+@CompileDynamic
 @Property(name = 'facebook.sdk.app.id', value = '1234567890')
 @Property(name = 'facebook.sdk.app.secret', value = 'secret')
 class FacebookSignedRequestBinderSpec extends Specification {
@@ -32,7 +39,7 @@ class FacebookSignedRequestBinderSpec extends Specification {
     Gru gru = Gru.equip(Http.steal(this))
 
     void setup() {
-        gru.prepare(server.getURL().toExternalForm())
+        gru.prepare(server.URL.toExternalForm())
     }
 
     void 'application exists'() {
@@ -40,7 +47,7 @@ class FacebookSignedRequestBinderSpec extends Specification {
             application
     }
 
-    void 'test anonymous'() {
+    void 'anonymous access'() {
         expect:
             gru.test {
                 post '/test/fbsr'
@@ -50,7 +57,7 @@ class FacebookSignedRequestBinderSpec extends Specification {
             }
     }
 
-    void 'test parameter'() {
+    void 'access with parameter'() {
         expect:
             gru.test {
                 post '/test/fbsr', {
@@ -62,13 +69,13 @@ class FacebookSignedRequestBinderSpec extends Specification {
             }
     }
 
-    void 'test cookie'() {
+    void 'access with cookie'() {
         given:
-            final String cookieName = 'fbsr_' + 1234567890;
+            final String COOKIE_NAME = 'fbsr_1234567890'
         expect:
             gru.test {
                 post '/test/fbsr', {
-                    cookie cookieName, FacebookSignedRequestSpec.TEST_REQUEST.generate('secret')
+                    cookie COOKIE_NAME, FacebookSignedRequestSpec.TEST_REQUEST.generate('secret')
                 }
                 expect {
                     text inline(FacebookSignedRequestSpec.TEST_REQUEST.userId.toString())
@@ -78,18 +85,20 @@ class FacebookSignedRequestBinderSpec extends Specification {
 
 }
 
+@CompileStatic
 class SignedRequestBody {
-    String signed_request
+
+    String signedRequest
 
     @Override
     String toString() {
-        return "SignedRequestBody{" +
-                "signed_request='" + signed_request + '\'' +
-                '}';
+        return "SignedRequestBody{signedRequest='$signedRequest'}"
     }
+
 }
 
 @Slf4j
+@CompileStatic
 @Requires(env = Environment.TEST)
 @Controller('/test')
 class TestController {
@@ -100,7 +109,7 @@ class TestController {
     String testFacebookSignedRequest(@Nullable FacebookSignedRequest request, @Nullable @Body SignedRequestBody body) {
         log.info('body can be still injected: ' + body)
         if (!request) {
-            return "nothing"
+            return 'nothing'
         }
         return request.userId
     }
