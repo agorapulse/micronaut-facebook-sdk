@@ -35,6 +35,30 @@ class FlowableConnectionSpec extends Specification {
             all == ['one', 'two', 'three', 'four', 'five', 'six']
     }
 
+    void 'automatic pagination with flowable connection from groovy'() {
+        given:
+            FacebookClient client = Spy(DefaultFacebookClient)
+            Connection<String> first = new Connection<>(
+                    client,
+                    '{ "data" : ["one", "two", "three"], "paging" : { "next" : "https://example.com/foobar" } }',
+                    String
+            )
+            Connection<String> second = new Connection<>(client,  '{ "data" : ["four", "five", "six"] }', String)
+
+            _ * client.fetchConnection('/foo', String) >> first
+            _ * client.fetchConnectionPage('https://example.com/foobar', String) >> second
+        when:
+            Flowable<String> flowable = client.fetchFlowable('/foo', String)
+        then:
+            0 * _
+
+        when:
+            List<String> all = flowable.toList().blockingGet()
+
+        then:
+            all == ['one', 'two', 'three', 'four', 'five', 'six']
+    }
+
     void 'error handling'() {
         given:
             FacebookClient client = Spy(DefaultFacebookClient)

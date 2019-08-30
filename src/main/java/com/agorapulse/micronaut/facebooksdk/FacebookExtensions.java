@@ -1,5 +1,6 @@
 package com.agorapulse.micronaut.facebooksdk;
 
+import com.agorapulse.micronaut.facebooksdk.rx.FlowableConnection;
 import com.restfb.BinaryAttachment;
 import com.restfb.Connection;
 import com.restfb.FacebookClient;
@@ -20,20 +21,6 @@ import java.util.Map;
  * Designed to provide maximum compatibility with the former Grails plugin.
  */
 public class FacebookExtensions {
-
-    /**
-     * Fetches a single <a href="http://developers.facebook.com/docs/reference/api/">Graph API object</a>, mapping the
-     * result to an instance of {@code objectType}.
-     *
-     * @param <T>        Java type to map to.
-     * @param object     ID of the object to fetch, e.g. {@code "me"}.
-     * @param objectType Object type token.
-     * @return An instance of type {@code objectType} which contains the requested object's data.
-     * @throws FacebookException If an error occurs while performing the API call.
-     */
-    public static <T> T fetchObject(FacebookClient client, String object, Class<T> objectType) {
-        return client.fetchObject(object, objectType);
-    }
 
     /**
      * Fetches a single <a href="http://developers.facebook.com/docs/reference/api/">Graph API object</a>, mapping the
@@ -66,24 +53,6 @@ public class FacebookExtensions {
      */
     public static <T> T fetchObjects(FacebookClient client, List<String> ids, Class<T> objectType, Map<String, Object> parameters) {
         return client.fetchObjects(ids, objectType, buildVariableArgs(parameters));
-    }
-
-
-    /**
-     * Fetches multiple <a href="http://developers.facebook.com/docs/reference/api/">Graph API objects</a> in a single
-     * call, mapping the results to an instance of {@code objectType}.
-     * <p>
-     * You'll need to write your own container type ({@code objectType}) to hold the results. See
-     * <a href="http://restfb.com">http://restfb.com</a> for an example of how to do this.
-     *
-     * @param <T>        Java type to map to.
-     * @param ids        IDs of the objects to fetch, e.g. {@code "me", "arjun"}.
-     * @param objectType Object type token.
-     * @return An instance of type {@code objectType} which contains the requested objects' data.
-     * @throws FacebookException If an error occurs while performing the API call.
-     */
-    public static <T> T fetchObjects(FacebookClient client, List<String> ids, Class<T> objectType) {
-        return client.fetchObjects(ids, objectType);
     }
 
     /**
@@ -155,7 +124,7 @@ public class FacebookExtensions {
      * @return An instance of type {@code connectionType} which contains the requested Connection's data.
      */
     public static <T> Flowable<T> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType) {
-        return fetchFlowable(facebookClient, connection, connectionType);
+        return fetchFlowable(facebookClient, connection, connectionType, Collections.emptyMap());
     }
 
     /**
@@ -168,50 +137,7 @@ public class FacebookExtensions {
      * @return An instance of type {@code connectionType} which contains the requested Connection's data.
      */
     public static <T> Flowable<T> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType, Map<String, Object> parameters) {
-        return fetchFlowable(facebookClient, connection, connectionType, buildVariableArgs(parameters));
-    }
-
-    /**
-     * Fetches a Graph API {@code Connection} type, mapping the result to an instance of {@code connectionType}.
-     *
-     * @param <T>            Java type to map to.
-     * @param connection     The name of the connection, e.g. {@code "me/feed"}.
-     * @param connectionType Connection type token.
-     * @param parameters     URL parameters to include in the API call (optional).
-     * @return An instance of type {@code connectionType} which contains the requested Connection's data.
-     */
-    public static <T> Flowable<T> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType, Parameter... parameters) {
-        Flowable<List<T>> listFlowable = Flowable.generate(() -> connection, (currentConnection, emitter) -> {
-            try {
-                Connection<T> conn = fetchNextConnection(facebookClient, connection, connectionType, currentConnection, parameters);
-
-                emitter.onNext(conn.getData());
-
-                if (!conn.hasNext()) {
-                    emitter.onComplete();
-                }
-
-                return conn.getNextPageUrl();
-            } catch (FacebookException ex) {
-                emitter.onError(ex);
-                return null;
-            }
-        });
-
-        return listFlowable.flatMap(Flowable::fromIterable);
-    }
-
-    /**
-     * Fetches a Graph API {@code Connection} type, mapping the result to an instance of {@code connectionType}.
-     *
-     * @param <T>            Java type to map to.
-     * @param connection     The name of the connection, e.g. {@code "me/feed"}.
-     * @param connectionType Connection type token.
-     * @return An instance of type {@code connectionType} which contains the requested Connection's data.
-     * @throws FacebookException If an error occurs while performing the API call.
-     */
-    public static <T> Connection<T> fetchConnection(FacebookClient client, String connection, Class<T> connectionType) {
-        return client.fetchConnection(connection, connectionType);
+        return FlowableConnection.create(facebookClient, connection, connectionType, buildVariableArgs(parameters));
     }
 
     /**
@@ -227,20 +153,6 @@ public class FacebookExtensions {
      */
     public static <T> T publish(FacebookClient client, String connection, Class<T> objectType, Map<String, Object> parameters) {
         return client.publish(connection, objectType, buildVariableArgs(parameters));
-    }
-
-    /**
-     * Performs a <a href="http://developers.facebook.com/docs/api#publishing">Graph API publish</a> operation on the
-     * given {@code connection}, mapping the result to an instance of {@code objectType}.
-     *
-     * @param <T>        Java type to map to.
-     * @param connection The Connection to publish to.
-     * @param objectType Object type token.
-     * @return An instance of type {@code objectType} which contains the Facebook response to your publish request.
-     * @throws FacebookException If an error occurs while performing the API call.
-     */
-    public static <T> T publish(FacebookClient client, String connection, Class<T> objectType) {
-        return client.publish(connection, objectType);
     }
 
     /**
@@ -262,22 +174,6 @@ public class FacebookExtensions {
 
     /**
      * Performs a <a href="http://developers.facebook.com/docs/api#publishing">Graph API publish</a> operation on the
-     * given {@code connection} and includes some files - photos, for example - in the publish request, and mapping the
-     * result to an instance of {@code objectType}.
-     *
-     * @param <T>               Java type to map to.
-     * @param connection        The Connection to publish to.
-     * @param objectType        Object type token.
-     * @param binaryAttachments The files to include in the publish request.
-     * @return An instance of type {@code objectType} which contains the Facebook response to your publish request.
-     * @throws FacebookException If an error occurs while performing the API call.
-     */
-    public static <T> T publish(FacebookClient client, String connection, Class<T> objectType, List<BinaryAttachment> binaryAttachments) {
-        return client.publish(connection, objectType, binaryAttachments);
-    }
-
-    /**
-     * Performs a <a href="http://developers.facebook.com/docs/api#publishing">Graph API publish</a> operation on the
      * given {@code connection} and includes a file - a photo, for example - in the publish request, and mapping the
      * result to an instance of {@code objectType}.
      *
@@ -294,22 +190,6 @@ public class FacebookExtensions {
     }
 
     /**
-     * Performs a <a href="http://developers.facebook.com/docs/api#publishing">Graph API publish</a> operation on the
-     * given {@code connection} and includes a file - a photo, for example - in the publish request, and mapping the
-     * result to an instance of {@code objectType}.
-     *
-     * @param <T>              Java type to map to.
-     * @param connection       The Connection to publish to.
-     * @param objectType       Object type token.
-     * @param binaryAttachment The file to include in the publish request.
-     * @return An instance of type {@code objectType} which contains the Facebook response to your publish request.
-     * @throws FacebookException If an error occurs while performing the API call.
-     */
-    public static <T> T publish(FacebookClient client, String connection, Class<T> objectType, BinaryAttachment binaryAttachment) {
-        return client.publish(connection, objectType, binaryAttachment);
-    }
-
-    /**
      * Performs a <a href="http://developers.facebook.com/docs/api#deleting">Graph API delete</a> operation on the given
      * {@code object}.
      *
@@ -320,18 +200,6 @@ public class FacebookExtensions {
      */
     public static boolean deleteObject(FacebookClient client, String object, Map<String, Object> parameters) {
         return client.deleteObject(object, buildVariableArgs(parameters));
-    }
-
-    /**
-     * Performs a <a href="http://developers.facebook.com/docs/api#deleting">Graph API delete</a> operation on the given
-     * {@code object}.
-     *
-     * @param object     The ID of the object to delete.
-     * @return {@code true} if Facebook indicated that the object was successfully deleted, {@code false} otherwise.
-     * @throws FacebookException If an error occurred while attempting to delete the object.
-     */
-    public static boolean deleteObject(FacebookClient client, String object) {
-        return client.deleteObject(object);
     }
 
     /**
@@ -374,7 +242,7 @@ public class FacebookExtensions {
     }
 
     /**
-     * @deprecated use {@link #fetchConnection(FacebookClient, String, Class)} instead.
+     * @deprecated use {@link FacebookClient#fetchConnection(String, Class, Parameter...)} instead.
      */
     @Deprecated
     public static <T> Connection<T> makeRequest(FacebookClient client, String endPoint, Class<T> connectionType) {
@@ -390,11 +258,11 @@ public class FacebookExtensions {
     }
 
     /**
-     * @deprecated use {@link #publish(FacebookClient, String, Class)} instead.
+     * @deprecated use {@link FacebookClient#publish(String, Class, Parameter...)} instead.
      */
     @Deprecated
     public static <T> T makePostRequest(FacebookClient client, String connection, Class<T> objectType) {
-        return publish(client, connection, objectType);
+        return client.publish(connection, objectType);
     }
 
     /**
@@ -406,7 +274,7 @@ public class FacebookExtensions {
     }
 
     /**
-     * @deprecated use {@link #deleteObject(FacebookClient, String)} instead.
+     * @deprecated use {@link FacebookClient#deleteObject(String, Parameter...)} instead.
      */
     @Deprecated
     public static boolean makeDeleteRequest(FacebookClient client, String endPoint) {
@@ -419,13 +287,6 @@ public class FacebookExtensions {
                 .stream()
                 .map(e -> Parameter.with(e.getKey(), e.getValue()))
                 .toArray(Parameter[]::new);
-    }
-
-    private static <T> Connection<T> fetchNextConnection(FacebookClient facebookClient, String connection, Class<T> connectionType, String currentConnection, Parameter[] parameters) {
-        if (currentConnection.equals(connection)) {
-            return facebookClient.fetchConnection(connection, connectionType, parameters);
-        }
-        return facebookClient.fetchConnectionPage(currentConnection, connectionType);
     }
 
 }

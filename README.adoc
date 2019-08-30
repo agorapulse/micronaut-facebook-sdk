@@ -1,6 +1,6 @@
 = Micronaut Facebook SDK
 
-Micronaut provider for https://restfb.com/[restfb Facebook Kava client].
+Micronaut provider for https://restfb.com/[restfb Facebook Java client].
 
 == Installation
 
@@ -45,5 +45,84 @@ faceboook:
                 id: 1234567892
                 secret: t0ps€cr€tHaSh
                 # ...
+----
+
+== Usage
+
+The centerpiece of the integration is `FacebookApplication` object. You can inject it into your services to
+create a instance of `com.restfb.FacebookClient`:
+
+[source,java]
+----
+@Singleton
+public class MyJavaService {
+
+    private final FacebookApplication fb;
+
+    public MyJavaService(FacebookApplication fb) {
+        this.fb = fb;
+    }
+
+    /**
+     * Fetches the recent posts.
+     * @param token Facebook API token
+     * @return Connection with the first result list if any
+     */
+    public Connection<Post> fetchPosts(String token) {
+        return fb.createClient(token).fetchConnection("/me/posts", Post.class, DEFAULT_POST_PARAMS);
+    }
+
+    /**
+     * Fetches the recent posts.
+     * @param token Facebook API token
+     * @return Flowable iterating over the recent posts.
+     */
+    public Flowable<Post> postFlowable(String token) {
+        FacebookClient client = fb.createClient(token);
+        return FlowableConnection.create(client, "/me/posts", Post.class, DEFAULT_POST_PARAMS);
+    }
+}
+----
+
+If you are using RxJava you can use `FlowableConnection` to create `Flowable` wrapping `com.restfb.Connection` to simplify pagination.
+
+See https://restfb.com/documentation/ for further reference.
+
+=== Groovy Integration
+
+This library provides out-of-box integration with Groovy language. There are basically two additions to the `FacebookClient`:
+
+1. Ability to supply parameters as `Map<String, Object>`
+2. Ability to create `Flowable<T>` directly on `FacebookClient` object
+
+[source,groovy]
+----
+@Singleton
+class MyGroovyService {
+
+    private final FacebookApplication fb
+
+    MyGroovyService(FacebookApplication fb) {
+        this.fb = fb
+    }
+
+    /**
+     * Fetches the recent posts.
+     * @param token Facebook API token
+     * @return Connection with the first result list if any
+     */
+    Connection<Post> fetchPosts(String token) {
+        return fb.createClient(token).fetchConnection("/me/posts", Post, [fields: 'id,message'])
+    }
+
+    /**
+     * Fetches the recent posts.
+     * @param token Facebook API token
+     * @return Flowable iterating over the recent posts.
+     */
+    Flowable<Post> postFlowable(String token) {
+        return fb.createClient(token).fetchFlowable(client, "/me/posts", Post, [fields: 'id,message'])
+    }
+}
 ----
 
