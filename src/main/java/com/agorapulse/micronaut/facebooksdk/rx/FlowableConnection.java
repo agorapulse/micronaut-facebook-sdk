@@ -16,7 +16,7 @@ public class FlowableConnection {
         // disallow instantiation
     }
 
-    public static <T> Flowable<T> create(FacebookClient client, String connection, Class<T> connectionType, Parameter... parameters) {
+    public static <T> Flowable<List<T>> create(FacebookClient client, String connection, Class<T> connectionType, Parameter... parameters) {
         return generate(() -> null, (String nextPage, Emitter<List<T>> emitter) -> {
             Connection<T> conn = nextPage == null
                     ? client.fetchConnection(connection, connectionType, parameters)
@@ -30,6 +30,6 @@ public class FlowableConnection {
                 emitter.onComplete();
                 return null;
             }
-        }).flatMap(Flowable::fromIterable);
+        });
     }
 }

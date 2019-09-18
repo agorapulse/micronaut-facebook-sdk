@@ -77,7 +77,7 @@ public class MyJavaService {
      * @param token Facebook API token
      * @return Flowable iterating over the recent posts.
      */
-    public Flowable<Post> postFlowable(String token) {
+    public Flowable<List<Post>> postFlowable(String token) {
         FacebookClient client = fb.createClient(token);
         return FlowableConnection.create(client, "/me/posts", Post.class, DEFAULT_POST_PARAMS);
     }
@@ -93,7 +93,7 @@ See https://restfb.com/documentation/ for further reference.
 This library provides out-of-box integration with Groovy language. There are basically two additions to the `FacebookClient`:
 
 1. Ability to supply parameters as `Map<String, Object>`
-2. Ability to create `Flowable<T>` directly on `FacebookClient` object
+2. Ability to create `Flowable<List<T>>` directly on `FacebookClient` object
 
 [source,groovy]
 ----
@@ -120,7 +120,7 @@ class MyGroovyService {
      * @param token Facebook API token
      * @return Flowable iterating over the recent posts.
      */
-    Flowable<Post> postFlowable(String token) {
+    Flowable<List<Post>> postFlowable(String token) {
         return fb.createClient(token).fetchFlowable(client, "/me/posts", Post, [fields: 'id,message'])
     }
 }

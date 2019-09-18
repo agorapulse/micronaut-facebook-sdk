@@ -24,7 +24,7 @@ class FlowableConnectionSpec extends Specification {
             _ * client.fetchConnection('/foo', String) >> first
             _ * client.fetchConnectionPage('https://example.com/foobar', String) >> second
         when:
-            Flowable<String> flowable = FlowableConnection.create(client, '/foo', String)
+            Flowable<String> flowable = FlowableConnection.create(client, '/foo', String).flatMap(Flowable.&fromIterable)
         then:
             0 * _
 
@@ -48,7 +48,7 @@ class FlowableConnectionSpec extends Specification {
             _ * client.fetchConnection('/foo', String) >> first
             _ * client.fetchConnectionPage('https://example.com/foobar', String) >> second
         when:
-            Flowable<String> flowable = client.fetchFlowable('/foo', String)
+            Flowable<String> flowable = client.fetchFlowable('/foo', String).flatMap(Flowable.&fromIterable)
         then:
             0 * _
 
@@ -65,7 +65,7 @@ class FlowableConnectionSpec extends Specification {
 
             _ * client.fetchConnection('/foo', String) >> { throw new FacebookException('error') { } }
         when:
-            Flowable<String> flowable = FlowableConnection.create(client, '/foo', String)
+            Flowable<String> flowable = FlowableConnection.create(client, '/foo', String).flatMap(Flowable.&fromIterable)
         then:
             0 * _
 
