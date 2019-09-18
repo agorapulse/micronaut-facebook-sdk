@@ -123,7 +123,7 @@ public class FacebookExtensions {
      * @param connectionType Connection type token.
      * @return An instance of type {@code connectionType} which contains the requested Connection's data.
      */
-    public static <T> Flowable<T> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType) {
+    public static <T> Flowable<List<T>> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType) {
         return fetchFlowable(facebookClient, connection, connectionType, Collections.emptyMap());
     }
 
@@ -136,7 +136,7 @@ public class FacebookExtensions {
      * @param parameters     URL parameters to include in the API call (optional).
      * @return An instance of type {@code connectionType} which contains the requested Connection's data.
      */
-    public static <T> Flowable<T> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType, Map<String, Object> parameters) {
+    public static <T> Flowable<List<T>> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType, Map<String, Object> parameters) {
         return FlowableConnection.create(facebookClient, connection, connectionType, buildVariableArgs(parameters));
     }
 
