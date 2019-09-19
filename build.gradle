@@ -123,9 +123,9 @@ bintray {
     final String projectDescription = project.description
 
     pkg {
-        websiteUrl = 'https://github.com/agorapulse/micronaut-snitch'
-        issueTrackerUrl = 'https://github.com/agorapulse/micronaut-snitch/issues'
-        vcsUrl = 'https://github.com/agorapulse/micronaut-snitch.git'
+        websiteUrl = 'https://github.com/agorapulse/micronaut-facebook-sdk'
+        issueTrackerUrl = 'https://github.com/agorapulse/micronaut-facebook-sdk/issues'
+        vcsUrl = 'https://github.com/agorapulse/micronaut-facebook-sdk.git'
 
         repo = 'libs' // or your repo name
         userOrg = 'agorapulse'
