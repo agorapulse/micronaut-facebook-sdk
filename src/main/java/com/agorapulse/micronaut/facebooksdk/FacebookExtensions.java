@@ -5,15 +5,17 @@ import com.restfb.BinaryAttachment;
 import com.restfb.Connection;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
+import com.restfb.batch.BatchRequest;
+import com.restfb.batch.BatchResponse;
 import com.restfb.exception.FacebookException;
 import com.restfb.json.JsonObject;
 import com.restfb.scope.ScopeBuilder;
 import io.reactivex.Flowable;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.restfb.util.ObjectUtil.verifyParameterPresence;
+import static java.util.Arrays.asList;
 
 /**
  * Extensions for {@link com.restfb.FacebookClient}.
@@ -21,6 +23,8 @@ import java.util.Map;
  * Designed to provide maximum compatibility with the former Grails plugin.
  */
 public class FacebookExtensions {
+
+    private static final int BATCH_SIZE = 20;
 
     /**
      * Fetches a single <a href="http://developers.facebook.com/docs/reference/api/">Graph API object</a>, mapping the
@@ -55,6 +59,7 @@ public class FacebookExtensions {
         return client.fetchObjects(ids, objectType, buildVariableArgs(parameters));
     }
 
+
     /**
      * Fetches multiple <a href="http://developers.facebook.com/docs/reference/api/">Graph API objects</a> in a single
      * call, mapping the results to an instance of {@code objectType}.
@@ -70,18 +75,54 @@ public class FacebookExtensions {
      * @throws FacebookException If an error occurs while performing the API call.
      */
     public static <T> Map<String, T> fetchAll(FacebookClient client, List<String> ids, Class<T> objectType, Map<String, Object> parameters) {
-        JsonObject object = client.fetchObjects(ids, JsonObject.class, buildVariableArgs(parameters));
-
-        if (object == null) {
-            return Collections.emptyMap();
-        }
-
         Map<String, T> objects = new LinkedHashMap<>();
-        for (JsonObject.Member member : object) {
-            objects.put(member.getName(), client.getJsonMapper().toJavaObject(member.getValue().toString(), objectType));
+
+        for(List<String> part : collate(ids, BATCH_SIZE)) {
+            JsonObject object = client.fetchObjects(part, JsonObject.class, buildVariableArgs(parameters));
+
+            if (object == null) {
+                return Collections.emptyMap();
+            }
+
+            for (JsonObject.Member member : object) {
+                objects.put(member.getName(), client.getJsonMapper().toJavaObject(member.getValue().toString(), objectType));
+            }
         }
 
         return objects;
+    }
+
+    /**
+     * @see com.restfb.FacebookClient#executeBatch(com.restfb.batch.BatchRequest[])
+     */
+    public static List<BatchResponse> safeBatch(FacebookClient client, BatchRequest... batchRequests) {
+        return safeBatch(client, asList(batchRequests), Collections.emptyList());
+    }
+
+    /**
+     * @see com.restfb.FacebookClient#executeBatch(java.util.List)
+     */
+    public static List<BatchResponse> safeBatch(FacebookClient client, List<BatchRequest> batchRequests) {
+        return safeBatch(client, batchRequests, Collections.emptyList());
+    }
+
+    /**
+     * @see com.restfb.FacebookClient#executeBatch(java.util.List, java.util.List)
+     */
+    public static List<BatchResponse> safeBatch(FacebookClient client, List<BatchRequest> batchRequests, List<BinaryAttachment> binaryAttachments) {
+        verifyParameterPresence("binaryAttachments", binaryAttachments);
+
+        if (batchRequests == null || batchRequests.isEmpty()) {
+            throw new IllegalArgumentException("You must specify at least one batch request.");
+        }
+
+        List<BatchResponse> responses = new ArrayList<>();
+
+        for (List<BatchRequest> requests : collate(batchRequests, BATCH_SIZE)) {
+            responses.addAll(client.executeBatch(requests, binaryAttachments));
+        }
+
+        return responses;
     }
 
     /**
@@ -287,6 +328,31 @@ public class FacebookExtensions {
                 .stream()
                 .map(e -> Parameter.with(e.getKey(), e.getValue()))
                 .toArray(Parameter[]::new);
+    }
+
+    private static <T> List<List<T>> collate(List<T> selfList, int step) {
+        if (selfList == null) {
+            return Collections.singletonList(Collections.emptyList());
+        }
+
+        int size = selfList.size();
+
+        if (size <= step) {
+            return Collections.singletonList(selfList);
+        }
+
+        List<List<T>> answer = new ArrayList<>();
+        if (step <= 0) {
+            throw new IllegalArgumentException("step must be greater than zero");
+        }
+        for (int pos = 0; pos < size && pos > -1; pos += step) {
+            List<T> element = new ArrayList<>();
+            for (int offs = pos; offs < pos + size && offs < size; offs++) {
+                element.add(selfList.get(offs));
+            }
+            answer.add(element);
+        }
+        return answer;
     }
 
 }
