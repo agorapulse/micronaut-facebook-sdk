@@ -14,7 +14,7 @@ plugins {
 
 
 
-version "0.2.1"
+version "0.2.2"
 group "com.agorapulse"
 
 repositories {
@@ -36,7 +36,7 @@ configurations {
 
 dependencies {
     // custom
-    compile 'com.restfb:restfb:2.24.1'
+    compile 'com.restfb:restfb:2.26.0'
 
     testCompile "com.agorapulse:gru-http:0.8.2"
 
