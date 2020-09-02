@@ -52,6 +52,8 @@ dependencies {
     optional "io.micronaut:micronaut-http"
     optional "io.reactivex.rxjava2:rxjava"
 
+    compileOnly  "com.agorapulse:micronaut-grails:1.2.11.1"
+
     runtime "ch.qos.logback:logback-classic:1.2.3"
 
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
