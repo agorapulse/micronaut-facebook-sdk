@@ -35,7 +35,7 @@ configurations {
 
 dependencies {
     // custom
-    compile 'com.restfb:restfb:3.7.0'
+    compile 'com.restfb:restfb:3.13.0'
 
     testCompile "com.agorapulse:gru-http:0.8.2"
 
