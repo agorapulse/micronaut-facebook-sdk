@@ -3,6 +3,7 @@ package com.agorapulse.micronaut.facebooksdk
 import com.restfb.DefaultFacebookClient
 import com.restfb.FacebookClient
 import com.restfb.Version
+import groovy.transform.CompileDynamic
 import io.micronaut.context.annotation.Property
 import io.micronaut.test.annotation.MicronautTest
 import spock.lang.Specification
@@ -10,6 +11,7 @@ import spock.lang.Specification
 import javax.inject.Inject
 
 @MicronautTest
+@CompileDynamic
 @Property(name = 'facebook.sdk.app.api-version', value = 'v3.2')
 class FacebookApplicationConfigurationSpec extends Specification {
 
