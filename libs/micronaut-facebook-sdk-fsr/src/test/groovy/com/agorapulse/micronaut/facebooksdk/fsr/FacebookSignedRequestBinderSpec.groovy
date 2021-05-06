@@ -80,11 +80,11 @@ class FacebookSignedRequestBinderSpec extends Specification {
 
     void 'access with cookie'() {
         given:
-            final String COOKIE_NAME = 'fbsr_1234567890'
+            final String cookieName = 'fbsr_1234567890'
         expect:
             gru.test {
                 post '/test/fbsr', {
-                    cookie COOKIE_NAME, FacebookSignedRequestSpec.TEST_REQUEST.generate('secret')
+                    cookie cookieName, FacebookSignedRequestSpec.TEST_REQUEST.generate('secret')
                 }
                 expect {
                     text inline(FacebookSignedRequestSpec.TEST_REQUEST.userId.toString())

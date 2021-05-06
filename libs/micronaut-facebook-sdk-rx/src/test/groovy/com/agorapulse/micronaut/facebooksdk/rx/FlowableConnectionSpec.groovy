@@ -87,7 +87,7 @@ class FlowableConnectionSpec extends Specification {
             0 * _
 
         when:
-            List<String> all = flowable.onErrorReturn { it.message }.toList().blockingGet()
+            List<String> all = flowable.onErrorReturn { Throwable th -> th.message }.toList().blockingGet()
 
         then:
             all == ['error']
