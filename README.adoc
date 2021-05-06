@@ -6,7 +6,19 @@ Micronaut provider for https://restfb.com/[restfb Facebook Java client].
 
 [source,groovy]
 ----
-compile 'com.agorapulse:micronaut-facebook-sdk:0.1.0'
+implementation 'com.agorapulse:micronaut-facebook-sdk:{version}'
+
+// grails support
+implementation 'com.agorapulse:micronaut-facebook-sdk-grails:{version}'
+
+// flowable connection support
+implementation 'com.agorapulse:micronaut-facebook-sdk-rx:{version}'
+
+// facebook stored request support
+implementation 'com.agorapulse:micronaut-facebook-sdk-fsr:{version}'
+
+// facebook server mock using Ersatz server
+testImplementation 'com.agorapulse:micronaut-facebook-sdk-mock:{version}'
 ----
 
 == Configuration
@@ -73,7 +85,7 @@ public class MyJavaService {
     }
 
     /**
-     * Fetches the recent posts.
+     * Fetches the recent post - requires micronaut-facebook-sdk-rx.
      * @param token Facebook API token
      * @return Flowable iterating over the recent posts.
      */
@@ -84,7 +96,7 @@ public class MyJavaService {
 }
 ----
 
-If you are using RxJava you can use `FlowableConnection` to create `Flowable` wrapping `com.restfb.Connection` to simplify pagination.
+If you are using RxJava you can use `micronaut-facebook-sdk-rx` which provides `FlowableConnection` to create `Flowable` wrapping `com.restfb.Connection` to simplify pagination.
 
 See https://restfb.com/documentation/ for further reference.
 
@@ -116,7 +128,7 @@ class MyGroovyService {
     }
 
     /**
-     * Fetches the recent posts.
+     * Fetches the recent posts - requires micronaut-facebook-sdk-rx.
      * @param token Facebook API token
      * @return Flowable iterating over the recent posts.
      */
@@ -126,3 +138,39 @@ class MyGroovyService {
 }
 ----
 
+
+=== Testing
+
+You can use `micronaut-facebook-sdk-mock` to inject bean `TestFacebookApplication` into your tests. Then you can use `mockApi` method
+to set up the mock Facebook server.
+
+See `FacebookApiResponse` and `TestFacebookApplicationExtensions` for further details.
+
+[source,groovy]
+----
+@MicronautTest
+@CompileDynamic
+class TestFacebookApplicationSpec extends Specification {
+
+    Fixt fixt = Fixt.create(TestFacebookApplicationSpec)
+
+    @Inject @AutoCleanup TestFacebookApplication facebook
+
+    void 'get me'() {
+        given:
+            facebook.mockApi {
+                get('/v10.0/me') {
+                    just fixt.readText('me.json')
+                }
+            }
+
+        when:
+            User me = facebook.createClient().fetchObject('/me', User)
+
+        then:
+            me
+            me.name == 'Facebook SDK'
+    }
+
+}
+----

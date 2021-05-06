@@ -1,0 +1,3 @@
+moduleName = micronaut-facebook-sdk.rx
+moduleVersion = 4.0.0
+extensionClasses = com.agorapulse.micronaut.facebooksdk.rx.FacebookFlowableExtensions

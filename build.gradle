@@ -1,139 +1,234 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2021 Agorapulse.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 plugins {
-    id "io.spring.dependency-management" version "1.0.6.RELEASE"
-    id "com.github.johnrengelman.shadow" version "4.0.2"
-    id "groovy"
-    id "jacoco"
-    id "checkstyle"
-    id "codenarc"
-    id 'com.github.kt3k.coveralls' version '2.8.4'
-    id "maven-publish"
-    id "com.jfrog.bintray" version "1.8.4"
-    id "net.ltgt.apt-eclipse" version "0.21"
-    id "net.ltgt.apt-idea" version "0.21"
+    id 'org.kordamp.gradle.groovy-project'
+    id 'org.kordamp.gradle.checkstyle'
+    id 'org.kordamp.gradle.codenarc'
+    id 'org.kordamp.gradle.coveralls'
+    id 'io.github.gradle-nexus.publish-plugin'
 }
 
+if (!project.hasProperty('ossrhUsername'))      ext.ossrhUsername       = System.getenv('SONATYPE_USERNAME') ?: '**UNDEFINED**'
+if (!project.hasProperty('ossrhPassword'))      ext.ossrhPassword       = System.getenv('SONATYPE_PASSWORD') ?: '**UNDEFINED**'
+if (!project.hasProperty('signingKeyId'))       ext.signingKeyId        = System.getenv('SIGNING_KEY_ID') ?: '**UNDEFINED**'
+if (!project.hasProperty('signingPassword'))    ext.signingPassword     = System.getenv('SIGNING_PASSWORD') ?: '**UNDEFINED**'
+if (!project.hasProperty('signingSecretKey'))   ext.signingSecretKey    = System.getenv('SIGNING_SECRET_KEY_PATH') ? rootProject.file(System.getenv('SIGNING_SECRET_KEY_PATH')).text : '**UNDEFINED**'
 
 
-group "com.agorapulse"
+config {
+    release = (rootProject.findProperty('release') ?: false).toBoolean()
 
-repositories {
-    mavenCentral()
-    maven { url "https://jcenter.bintray.com" }
+    info {
+        name        = 'Micronaut Facebook SDK'
+        vendor      = 'Agorapulse'
+        description = 'Micronaut Facebook SDK'
+
+        links {
+            website      = 'https://github.com/' + slug
+            issueTracker = 'https://github.com/' + slug + '/issues'
+            scm          = 'https://github.com/' + slug + '.git'
+        }
+
+        people {
+            person {
+                id    = 'musketyr'
+                name  = 'Vladimir Orany'
+                roles = ['developer']
+            }
+        }
+
+        repositories {
+            repository {
+                name = 'localReleases'
+                url  = '' + project.rootProject.buildDir + '/repos/local/releases'
+            }
+            repository {
+                name = 'localSnapshot'
+                url  = '' + project.rootProject.buildDir + '/repos/local/snapshot'
+            }
+        }
+    }
+
+    licensing {
+        licenses {
+            license {
+                id = 'Apache-2.0'
+            }
+        }
+    }
+
+    publishing {
+        signing {
+            enabled =  true
+            keyId = signingKeyId
+            secretKey = signingSecretKey
+            password = signingPassword
+        }
+        releasesRepository  = 'localReleases'
+        snapshotsRepository = 'localSnapshot'
+    }
+
+    quality {
+        checkstyle {
+            ignoreFailures  = false
+            toolVersion     = '8.27'
+        }
+
+        codenarc {
+            ignoreFailures  = false
+            toolVersion     = '1.5'
+        }
+    }
+
+    docs {
+        javadoc {
+            autoLinks {
+                enabled = false
+            }
+        }
+    }
+
 }
 
-dependencyManagement {
-    imports {
-        mavenBom 'io.micronaut:micronaut-bom:1.2.0'
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = ossrhUsername
+            password = ossrhPassword
+        }
     }
 }
 
-configurations {
-    optional.extendsFrom compile
-
-    testCompile.extendsFrom optional
-}
-
-dependencies {
-    // custom
-    compile 'com.restfb:restfb:3.15.0'
-
-    testCompile "com.agorapulse:gru-http:0.8.2"
-
-    testCompile "io.micronaut:micronaut-http-server-netty"
-
-    // generated
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    annotationProcessor "io.micronaut:micronaut-validation"
-
-    compile "io.micronaut:micronaut-inject"
-    compile "io.micronaut:micronaut-validation"
-    compile "io.micronaut:micronaut-runtime"
-
-    optional "io.micronaut:micronaut-http"
-    optional "io.reactivex.rxjava2:rxjava"
-
-    compileOnly  "com.agorapulse:micronaut-grails:1.2.11.1"
-
-    runtime "ch.qos.logback:logback-classic:1.2.3"
-
-    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
-
-    testCompile("org.spockframework:spock-core") {
-        exclude group: "org.codehaus.groovy", module: "groovy-all"
+allprojects {
+    repositories {
+        mavenCentral()
     }
 
-    testCompile "io.micronaut:micronaut-inject-groovy"
-    testCompile "io.micronaut.test:micronaut-test-spock"
-    testCompile 'net.bytebuddy:byte-buddy:1.10.1'
-    testCompile 'org.objenesis:objenesis:3.0.1'
+    license {
+        exclude '**/*.json'
+        exclude '**/*.yml'
+        exclude '**/*.txt'
+        exclude '**/*.gdsl'
+        exclude '**/ConsoleSpec/*.groovy'
+    }
 }
 
-tasks.withType(JavaCompile){
-    options.encoding = "UTF-8"
-    options.compilerArgs.add('-parameters')
-}
+projects {
+    subprojects {
+        dirs(['libs', 'examples']) { Project subproject ->
+            sourceCompatibility = 1.8
+            targetCompatibility = 1.8
 
-checkstyle {
-    toolVersion = '8.23'
-}
-
-codenarc {
-    toolVersion = '1.4'
-}
-
-
-// publishing
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
-}
-
-publishing {
-    publications {
-        groovyMaven(MavenPublication) {
-            from components.java
-
-            artifact sourcesJar {
-                classifier "sources"
+            repositories {
+                mavenCentral()
             }
 
-            artifact javadocJar {
-                classifier "javadoc"
+            // location independent tests (useful for stable CI builds)
+            tasks.withType(Test){
+                systemProperty 'user.timezone', 'UTC'
+                systemProperty 'user.language', 'en'
+            }
+
+            tasks.withType(JavaCompile) {
+                options.encoding = 'UTF-8'
+                options.compilerArgs.add('-parameters')
+            }
+
+            tasks.withType(GroovyCompile) {
+                groovyOptions.forkOptions.jvmArgs.add('-Dgroovy.parameters=true')
+            }
+
+            dependencies {
+                annotationProcessor platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
+                api platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
+                compile platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
+                implementation platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
+                compileOnly platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
+                testCompile platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
+                testImplementation platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
+
+                annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
+                api platform("io.micronaut:micronaut-bom:$micronautVersion")
+                compile platform("io.micronaut:micronaut-bom:$micronautVersion")
+                implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+                compileOnly platform("io.micronaut:micronaut-bom:$micronautVersion")
+                testCompile platform("io.micronaut:micronaut-bom:$micronautVersion")
+                testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+
+                annotationProcessor 'io.micronaut:micronaut-inject-java'
+                annotationProcessor 'io.micronaut:micronaut-validation'
+
+                implementation 'io.micronaut:micronaut-core'
+                implementation 'io.micronaut:micronaut-inject'
+                implementation 'io.micronaut:micronaut-validation'
+                implementation 'io.micronaut:micronaut-runtime'
+
+
+                compileOnly 'io.micronaut:micronaut-inject-groovy'
+
+                testImplementation("org.spockframework:spock-core:$spockVersion") {
+                    exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+                }
+
+                testImplementation 'com.agorapulse:micronaut-log4aws:1.1.5'
+                testImplementation 'io.micronaut:micronaut-inject-groovy'
+                testImplementation 'io.micronaut.test:micronaut-test-spock'
+                testImplementation 'io.micronaut.test:micronaut-test-junit5' // otherwise we get failure in spock
+                testImplementation 'net.bytebuddy:byte-buddy:1.10.1'
+                testImplementation 'org.objenesis:objenesis:3.0.1'
+            }
+
+            // useful for IntelliJ
+            task cleanOut(type: Delete) {
+                delete file('out')
+            }
+
+            clean.dependsOn cleanOut
+        }
+
+        dir('libs') {
+            processResources {
+                filesMatching('**/org.codehaus.groovy.runtime.ExtensionModule') {
+                    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [VERSION: version])
+                }
+            }
+
+            jar {
+                manifest.attributes provider: 'gradle'
+            }
+
+            dependencies {
+                testImplementation group: 'org.spockframework', name: 'spock-core', version: spockVersion
+            }
+        }
+
+        dir('examples') {
+            config {
+                publishing {
+                    enabled = false
+                }
+            }
+
+            dependencies {
+                implementation project(':micronaut-facebook-sdk')
             }
         }
     }
 }
 
-// set bintrayUser & bintrayKey in gradle.properties
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    publications = ['groovyMaven']
-    publish = true
-
-    final String projectName = project.name
-    final String projectDescription = project.description
-
-    pkg {
-        websiteUrl = 'https://github.com/agorapulse/micronaut-facebook-sdk'
-        issueTrackerUrl = 'https://github.com/agorapulse/micronaut-facebook-sdk/issues'
-        vcsUrl = 'https://github.com/agorapulse/micronaut-facebook-sdk.git'
-
-        repo = 'libs' // or your repo name
-        userOrg = 'agorapulse'
-        name = projectName       // somehow project.* doesn't work in this closure
-        desc = projectDescription
-        licenses = ['Apache-2.0']
-    }
-    // dryRun = true // whether to run this as dry-run, without deploying
-}
-
+check.dependsOn('aggregateCheckstyle', 'aggregateCodenarc', 'aggregateAllTestReports', 'coveralls')
