@@ -81,10 +81,6 @@ public abstract class AbstractFacebookApplicationConfiguration {
         return Version.getVersionFromString("v" + this.version);
     }
 
-    public void setApiVersion(String version) {
-        setVersion(version);
-    }
-
     public void setApiVersion(Version version) {
         setVersion(version.getUrlElement());
     }
