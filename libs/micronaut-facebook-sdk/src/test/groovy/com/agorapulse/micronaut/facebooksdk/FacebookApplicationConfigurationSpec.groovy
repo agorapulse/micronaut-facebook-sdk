@@ -21,19 +21,25 @@ import com.restfb.DefaultFacebookClient
 import com.restfb.FacebookClient
 import com.restfb.Version
 import groovy.transform.CompileDynamic
-import io.micronaut.context.annotation.Property
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.context.ApplicationContext
+import spock.lang.AutoCleanup
 import spock.lang.Specification
 
-import javax.inject.Inject
-
-@MicronautTest
 @CompileDynamic
-@Property(name = 'facebook.sdk.app.api-version', value = 'v3.2')
 class FacebookApplicationConfigurationSpec extends Specification {
 
-    @Inject
     FacebookApplication application
+
+    @AutoCleanup ApplicationContext context
+
+    void setup() {
+        context = ApplicationContext.builder(
+            'facebook.sdk.app.api-version': 'v3.2'
+        ).build()
+        context.start()
+
+        application = context.getBean(FacebookApplication)
+    }
 
     void 'application version is converted'() {
         given:
