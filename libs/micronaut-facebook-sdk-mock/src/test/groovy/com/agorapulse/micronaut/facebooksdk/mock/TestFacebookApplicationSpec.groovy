@@ -37,7 +37,7 @@ class TestFacebookApplicationSpec extends Specification {
     void 'get me'() {
         given:
             facebook.mockApi {
-                get('/v10.0/me') {
+                get('/v12.0/me') {
                     just fixt.readText('me.json')
                 }
             }
