@@ -39,6 +39,7 @@ import groovy.transform.Field
 
 @Field static final Map<String, Object> IMPORTS = [
         'javax.inject.Singleton': 'jakarta.inject.Singleton',
+        'javax.inject.Named': 'jakarta.inject.Named',
         'io.micronaut.test.annotation.MicronautTest':  [
                 java: 'io.micronaut.test.extensions.junit5.annotation.MicronautTest',
                 groovy: 'io.micronaut.test.extensions.spock.annotation.MicronautTest',
@@ -59,8 +60,7 @@ ext.micronautMigratedDependency = { String module ->
 pluginManager.withPlugin('java') {
     tasks.register('migrateImports') { Task task ->
         if (project.getProperty('micronautVersion').startsWith('3')) {
-            project.tasks.findByName('classes').dependsOn(task)
-            project.tasks.findByName('testClasses').dependsOn(task)
+            project.tasks.findByName('compileJava').dependsOn(task)
         }
 
         File javaSources = project.file('src/main/java')
