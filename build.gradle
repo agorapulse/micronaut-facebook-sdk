@@ -184,9 +184,6 @@ projects {
                 implementation 'io.micronaut:micronaut-validation'
                 implementation 'io.micronaut:micronaut-runtime'
 
-                annotationProcessor 'com.google.code.findbugs:jsr305:3.0.2'
-                implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
                 compileOnly 'io.micronaut:micronaut-inject-groovy'
 
                 testImplementation("org.spockframework:spock-core:$spockVersion") {

@@ -38,6 +38,7 @@ import groovy.transform.Field
 ]
 
 @Field static final Map<String, Object> IMPORTS = [
+        'javax.annotation.Nullable': 'io.micronaut.core.annotation.Nullable',
         'javax.inject.Singleton': 'jakarta.inject.Singleton',
         'javax.inject.Named': 'jakarta.inject.Named',
         'javax.inject.Inject': 'jakarta.inject.Inject',
