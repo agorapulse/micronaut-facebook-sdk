@@ -133,6 +133,8 @@ allprojects {
 projects {
     subprojects {
         dirs(['libs', 'examples']) { Project subproject ->
+            apply plugin: 'micronaut-compatibility'
+
             sourceCompatibility = 1.8
             targetCompatibility = 1.8
 
@@ -184,10 +186,6 @@ projects {
 
                 annotationProcessor 'com.google.code.findbugs:jsr305:3.0.2'
                 implementation 'com.google.code.findbugs:jsr305:3.0.2'
-                implementation 'javax.inject:javax.inject:1'
-                implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
-
-
 
                 compileOnly 'io.micronaut:micronaut-inject-groovy'
 
