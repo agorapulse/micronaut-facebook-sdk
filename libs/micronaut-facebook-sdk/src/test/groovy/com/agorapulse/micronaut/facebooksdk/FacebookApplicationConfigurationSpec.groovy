@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2021 Agorapulse.
+ * Copyright 2022 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,25 @@ import com.restfb.DefaultFacebookClient
 import com.restfb.FacebookClient
 import com.restfb.Version
 import groovy.transform.CompileDynamic
-import io.micronaut.context.annotation.Property
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.context.ApplicationContext
+import spock.lang.AutoCleanup
 import spock.lang.Specification
 
-import javax.inject.Inject
-
-@MicronautTest
 @CompileDynamic
-@Property(name = 'facebook.sdk.app.api-version', value = 'v3.2')
 class FacebookApplicationConfigurationSpec extends Specification {
 
-    @Inject
     FacebookApplication application
+
+    @AutoCleanup ApplicationContext context
+
+    void setup() {
+        context = ApplicationContext.builder(
+            'facebook.sdk.app.api-version': 'v3.2'
+        ).build()
+        context.start()
+
+        application = context.getBean(FacebookApplication)
+    }
 
     void 'application version is converted'() {
         given:

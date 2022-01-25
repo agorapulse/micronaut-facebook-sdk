@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2021 Agorapulse.
+ * Copyright 2022 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class TestFacebookApplicationSpec extends Specification {
     void 'get me'() {
         given:
             facebook.mockApi {
-                get('/v10.0/me') {
+                get('/v12.0/me') {
                     just fixt.readText('me.json')
                 }
             }

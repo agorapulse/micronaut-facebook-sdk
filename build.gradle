@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2021 Agorapulse.
+ * Copyright 2022 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,6 +133,8 @@ allprojects {
 projects {
     subprojects {
         dirs(['libs', 'examples']) { Project subproject ->
+            apply plugin: 'micronaut-compatibility'
+
             sourceCompatibility = 1.8
             targetCompatibility = 1.8
 
@@ -182,14 +184,13 @@ projects {
                 implementation 'io.micronaut:micronaut-validation'
                 implementation 'io.micronaut:micronaut-runtime'
 
-
                 compileOnly 'io.micronaut:micronaut-inject-groovy'
 
                 testImplementation("org.spockframework:spock-core:$spockVersion") {
                     exclude group: 'org.codehaus.groovy', module: 'groovy-all'
                 }
 
-                testImplementation 'com.agorapulse:micronaut-log4aws:1.1.5'
+                testImplementation "com.agorapulse:micronaut-log4aws:1.2.6-micronaut-${micronautVersion[0]}.0"
                 testImplementation 'io.micronaut:micronaut-inject-groovy'
                 testImplementation 'io.micronaut.test:micronaut-test-spock'
                 testImplementation 'io.micronaut.test:micronaut-test-junit5' // otherwise we get failure in spock
