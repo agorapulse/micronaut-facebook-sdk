@@ -59,10 +59,6 @@ ext.micronautMigratedDependency = { String module ->
 
 pluginManager.withPlugin('java') {
     tasks.register('migrateImports') { Task task ->
-        if (project.getProperty('micronautVersion').startsWith('3')) {
-            project.tasks.findByName('compileJava').dependsOn(task)
-        }
-
         File javaSources = project.file('src/main/java')
         File javaTestSources = project.file('src/test/java')
         File groovySources = project.file('src/main/groovy')
