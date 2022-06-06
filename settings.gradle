@@ -37,7 +37,7 @@ apply plugin:  'org.kordamp.gradle.settings'
 rootProject.name = 'micronaut-facebook-sdk-root'
 
 projects {
-    directories = ['libs', 'docs', 'examples']
+    directories = ['libs', 'docs', 'examples', 'platforms']
 
     plugins {
         dir('docs') {
@@ -47,6 +47,9 @@ projects {
         dirs(['libs', 'examples']) {
             id 'java-library'
             id 'groovy'
+        }
+        dir('platforms') {
+            id 'java-platform'
         }
     }
 }
