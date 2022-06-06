@@ -220,6 +220,8 @@ projects {
             dependencies {
                 testImplementation group: 'org.spockframework', name: 'spock-core', version: spockVersion
             }
+
+            project(':micronaut-facebook-bom').dependencies.constraints.api it
         }
 
         dir('examples') {
