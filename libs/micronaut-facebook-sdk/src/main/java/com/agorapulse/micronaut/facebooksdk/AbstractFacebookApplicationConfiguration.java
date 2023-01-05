@@ -18,15 +18,11 @@
 package com.agorapulse.micronaut.facebooksdk;
 
 import com.restfb.Version;
-import io.micronaut.context.annotation.ConfigurationProperties;
 
-import javax.inject.Named;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
-@Named("default")
-@ConfigurationProperties("facebook.sdk.app")
 public abstract class AbstractFacebookApplicationConfiguration {
 
     @NotBlank

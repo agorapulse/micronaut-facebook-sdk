@@ -21,7 +21,7 @@ import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 
 @EachProperty("facebook.sdk.apps")
-public class NamedFacebookApplicationConfiguration extends FacebookApplicationConfiguration {
+public class NamedFacebookApplicationConfiguration extends AbstractFacebookApplicationConfiguration {
 
     private final String name;
 
