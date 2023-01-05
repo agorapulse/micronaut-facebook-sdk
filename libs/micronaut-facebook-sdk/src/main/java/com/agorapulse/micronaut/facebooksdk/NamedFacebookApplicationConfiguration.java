@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2022 Agorapulse.
+ * Copyright 2019-2023 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 
 @EachProperty("facebook.sdk.apps")
-public class NamedFacebookApplicationConfiguration extends FacebookApplicationConfiguration {
+public class NamedFacebookApplicationConfiguration extends AbstractFacebookApplicationConfiguration {
 
     private final String name;
 
