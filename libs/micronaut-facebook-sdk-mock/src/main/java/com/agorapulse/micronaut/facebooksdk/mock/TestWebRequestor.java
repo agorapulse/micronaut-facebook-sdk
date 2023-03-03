@@ -17,12 +17,9 @@
  */
 package com.agorapulse.micronaut.facebooksdk.mock;
 
-import com.restfb.BinaryAttachment;
 import com.restfb.DebugHeaderInfo;
 import com.restfb.WebRequestor;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 public class TestWebRequestor implements WebRequestor {
@@ -33,43 +30,32 @@ public class TestWebRequestor implements WebRequestor {
     }
 
     @Override
-    public Response executeGet(String url, String headerAccessToken) {
+    public Response executeGet(Request request) {
+        Request testRequest = prepareTestRequest(request);
         try {
-            return delegate.executeGet(jailUrl(url), headerAccessToken);
+            return delegate.executeGet(testRequest);
         } catch (Exception e) {
-            throw new IllegalStateException("Cannot GET " + url, e);
+            throw new IllegalStateException("Cannot GET " + testRequest.getUrl(), e);
         }
     }
 
     @Override
-    public Response executeGet(String url) throws IOException {
-        return executeGet(url, null);
-    }
-
-    @Override
-    public Response executePost(String url, String parameters, String headerAccessToken) {
+    public Response executePost(Request request) {
+        Request testRequest = prepareTestRequest(request);
         try {
-            return delegate.executePost(jailUrl(url), parameters, headerAccessToken);
+            return delegate.executePost(testRequest);
         } catch (Exception e) {
-            throw new IllegalStateException("Cannot POST " + url, e);
+            throw new IllegalStateException("Cannot POST " + testRequest.getUrl(), e);
         }
     }
 
     @Override
-    public Response executePost(String url, String parameters, List<BinaryAttachment> binaryAttachments, String headerAccessToken) {
+    public Response executeDelete(Request request) {
+        Request testRequest = prepareTestRequest(request);
         try {
-            return delegate.executePost(jailUrl(url), parameters, binaryAttachments, headerAccessToken);
+            return delegate.executeDelete(testRequest);
         } catch (Exception e) {
-            throw new IllegalStateException("Cannot POST " + url, e);
-        }
-    }
-
-    @Override
-    public Response executeDelete(String url, String headerAccessToken) {
-        try {
-            return delegate.executeDelete(jailUrl(url), headerAccessToken);
-        } catch (Exception e) {
-            throw new IllegalStateException("Cannot DELETE " + url, e);
+            throw new IllegalStateException("Cannot DELETE " + testRequest.getUrl(), e);
         }
     }
 
@@ -86,6 +72,17 @@ public class TestWebRequestor implements WebRequestor {
         }
 
         return result;
+    }
+
+    private Request prepareTestRequest(Request request) {
+        Request testRequest = new Request(
+                jailUrl(request.getUrl()),
+                request.getHeaderAccessToken(),
+                request.getParameters(),
+                request.getBinaryAttachments()
+        );
+        testRequest.setBody(request.getBody());
+        return testRequest;
     }
 
     private final WebRequestor delegate;
