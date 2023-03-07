@@ -34,7 +34,7 @@ class FacebookApplicationConfigurationSpec extends Specification {
 
     void setup() {
         context = ApplicationContext.builder(
-            'facebook.sdk.app.api-version': 'v3.2'
+            'facebook.sdk.app.api-version': 'v16.0'
         ).build()
         context.start()
 
@@ -46,7 +46,7 @@ class FacebookApplicationConfigurationSpec extends Specification {
             FacebookClient client = application.createClient()
         expect:
             client instanceof DefaultFacebookClient
-            client.apiVersion == Version.VERSION_3_2
+            client.apiVersion == Version.VERSION_16_0
     }
 
 }
