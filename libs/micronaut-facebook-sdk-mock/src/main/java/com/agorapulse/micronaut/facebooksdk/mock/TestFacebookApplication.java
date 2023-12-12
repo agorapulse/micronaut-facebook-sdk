@@ -27,17 +27,21 @@ import com.restfb.FacebookClient;
 import com.restfb.JsonMapper;
 import com.restfb.Version;
 import com.restfb.WebRequestor;
-import com.stehno.ersatz.ContentType;
-import com.stehno.ersatz.ErsatzServer;
-import com.stehno.ersatz.Expectations;
+import io.github.cjstehno.ersatz.ErsatzServer;
+import io.github.cjstehno.ersatz.cfg.ContentType;
+import io.github.cjstehno.ersatz.cfg.Expectations;
+import io.micronaut.context.BeanContext;
 import io.micronaut.context.annotation.Replaces;
 
+import io.micronaut.context.exceptions.BeanInstantiationException;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -48,6 +52,8 @@ import static io.undertow.util.QueryParameterUtils.parseQueryString;
 @Singleton
 @Replaces(DefaultFacebookApplication.class)
 public class TestFacebookApplication implements FacebookApplication, Closeable {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestFacebookApplication.class);
 
     public static final String TOKEN = "TOKEN";
 
@@ -58,9 +64,16 @@ public class TestFacebookApplication implements FacebookApplication, Closeable {
     private final DefaultFacebookApplication fallback;
     private final FacebookApplicationConfiguration configuration;
 
-    public TestFacebookApplication(Optional<FacebookApplicationConfiguration> configuration) {
-        this.configuration = configuration.orElseGet(FacebookApplicationConfiguration::new);
+    public TestFacebookApplication(BeanContext context) {
+        FacebookApplicationConfiguration maybeConfiguration = null;
+        try {
+            maybeConfiguration = context.containsBean(FacebookApplicationConfiguration.class) ? context.getBean(FacebookApplicationConfiguration.class) : new FacebookApplicationConfiguration();
+        } catch (BeanInstantiationException ex){
+            LOGGER.trace("FacebookApplicationConfiguration not found, using default configuration", ex);
+        }
+        this.configuration = maybeConfiguration == null ? new FacebookApplicationConfiguration() : maybeConfiguration;
         this.fallback = new DefaultFacebookApplication(this.configuration);
+
     }
 
     @Override
@@ -103,15 +116,17 @@ public class TestFacebookApplication implements FacebookApplication, Closeable {
     }
 
     private static ErsatzServer prepareServer() {
-        ErsatzServer server = new ErsatzServer();
-        server.reportToConsole(true);
-        server.https(true);
-        server.decoder(ContentType.APPLICATION_URLENCODED, (body, ctx) -> {
-            if (body == null || body.length == 0) {
-                return null;
-            }
-            return parseQueryString(new String(body, StandardCharsets.UTF_8), StandardCharsets.UTF_8.name());
+        ErsatzServer server = new ErsatzServer(serverConfig -> {
+            serverConfig.reportToConsole(true);
+            serverConfig.https(true);
+            serverConfig.decoder(ContentType.APPLICATION_URLENCODED, (body, ctx) -> {
+                if (body == null || body.length == 0) {
+                    return null;
+                }
+                return parseQueryString(new String(body, StandardCharsets.UTF_8), StandardCharsets.UTF_8.name());
+            });
         });
+
         return server;
     }
 
