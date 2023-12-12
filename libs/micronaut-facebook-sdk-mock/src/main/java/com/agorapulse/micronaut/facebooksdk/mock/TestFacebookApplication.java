@@ -32,8 +32,8 @@ import com.stehno.ersatz.ErsatzServer;
 import com.stehno.ersatz.Expectations;
 import io.micronaut.context.annotation.Replaces;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Singleton;
 import java.io.Closeable;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;

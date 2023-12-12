@@ -31,13 +31,13 @@ import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Produces
 import io.micronaut.http.annotation.Consumes
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.AutoCleanup
 import spock.lang.Ignore
 import spock.lang.Specification
 
-import javax.annotation.Nullable
-import javax.inject.Inject
+import jakarta.annotation.Nullable
+import jakarta.inject.Inject
 
 @MicronautTest
 @CompileDynamic

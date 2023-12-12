@@ -20,6 +20,8 @@ dependencies {
     api "com.stehno.ersatz:ersatz:$ersatzVersion"
     api "space.jasan:groovy-closure-support:$groovyClosureSupportVersion"
 
+    implementation 'io.micronaut:micronaut-jackson-databind'
+
     // dependency of ersatz
     implementation 'io.undertow:undertow-core:2.0.28.Final'
     implementation 'javax.activation:activation:1.1.1'
