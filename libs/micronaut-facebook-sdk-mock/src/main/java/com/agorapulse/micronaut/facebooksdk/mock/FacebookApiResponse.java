@@ -19,8 +19,8 @@ package com.agorapulse.micronaut.facebooksdk.mock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stehno.ersatz.ContentType;
-import com.stehno.ersatz.Response;
+import io.github.cjstehno.ersatz.cfg.ContentType;
+import io.github.cjstehno.ersatz.cfg.Response;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

@@ -19,12 +19,12 @@ package com.agorapulse.micronaut.facebooksdk.mock.groovy;
 
 import com.agorapulse.micronaut.facebooksdk.mock.FacebookApiResponse;
 import com.agorapulse.micronaut.facebooksdk.mock.TestFacebookApplication;
-import com.stehno.ersatz.Expectations;
-import com.stehno.ersatz.Request;
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 import groovy.transform.stc.ClosureParams;
 import groovy.transform.stc.SimpleType;
+import io.github.cjstehno.ersatz.cfg.Expectations;
+import io.github.cjstehno.ersatz.cfg.Request;
 import space.jasan.support.groovy.closure.ConsumerWithDelegate;
 
 import static groovy.lang.Closure.DELEGATE_FIRST;

@@ -17,12 +17,11 @@
  */
 dependencies {
     api project(':micronaut-facebook-sdk')
-    api "com.stehno.ersatz:ersatz:$ersatzVersion"
+    api "io.github.cjstehno.ersatz:ersatz-groovy:$ersatzVersion"
+    api "io.github.cjstehno.ersatz:ersatz:$ersatzVersion"
     api "space.jasan:groovy-closure-support:$groovyClosureSupportVersion"
 
-    // dependency of ersatz
-    implementation 'io.undertow:undertow-core:2.0.28.Final'
-    implementation 'javax.activation:activation:1.1.1'
+    implementation 'io.micronaut:micronaut-jackson-databind'
 
     testImplementation "com.agorapulse.testing:fixt:$fixtVersion"
 }

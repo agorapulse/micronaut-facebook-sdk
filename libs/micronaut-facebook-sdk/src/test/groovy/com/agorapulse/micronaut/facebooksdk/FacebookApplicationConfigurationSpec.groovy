@@ -34,7 +34,9 @@ class FacebookApplicationConfigurationSpec extends Specification {
 
     void setup() {
         context = ApplicationContext.builder(
-            'facebook.sdk.app.api-version': 'v16.0'
+            'facebook.sdk.app.api-version': 'v16.0',
+            'facebook.sdk.app.id': '1234567890',
+            'facebook.sdk.app.secret': 'secret'
         ).build()
         context.start()
 
