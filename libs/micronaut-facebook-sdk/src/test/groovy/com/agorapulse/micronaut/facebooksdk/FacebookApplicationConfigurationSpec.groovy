@@ -28,23 +28,33 @@ import spock.lang.Specification
 @CompileDynamic
 class FacebookApplicationConfigurationSpec extends Specification {
 
-    FacebookApplication application
-
     @AutoCleanup ApplicationContext context
-
-    void setup() {
-        context = ApplicationContext.builder(
-            'facebook.sdk.app.api-version': 'v16.0',
-            'facebook.sdk.app.id': '1234567890',
-            'facebook.sdk.app.secret': 'secret'
-        ).build()
-        context.start()
-
-        application = context.getBean(FacebookApplication)
-    }
 
     void 'application version is converted'() {
         given:
+            context = ApplicationContext.builder(
+                    'facebook.sdk.app.api-version': 'v16.0',
+                    'facebook.sdk.app.id': '1234567890',
+                    'facebook.sdk.app.secret': 'secret'
+            ).build()
+            context.start()
+
+            FacebookApplication application = context.getBean(FacebookApplication)
+            FacebookClient client = application.createClient()
+        expect:
+            client instanceof DefaultFacebookClient
+            client.apiVersion == Version.VERSION_16_0
+    }
+
+    void 'app id is optional'() {
+        given:
+            context = ApplicationContext.builder(
+                    'facebook.sdk.app.api-version': 'v16.0',
+                    'facebook.sdk.app.secret': 'secret'
+            ).build()
+            context.start()
+
+            FacebookApplication application = context.getBean(FacebookApplication)
             FacebookClient client = application.createClient()
         expect:
             client instanceof DefaultFacebookClient
