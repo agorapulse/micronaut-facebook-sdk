@@ -17,6 +17,7 @@
  */
 pluginManagement {
     repositories {
+        mavenCentral()
         gradlePluginPortal()
     }
     plugins {
@@ -27,7 +28,6 @@ pluginManagement {
         id 'org.kordamp.gradle.guide'               version kordampVersion
         id 'org.kordamp.gradle.coveralls'           version kordampVersion
         id 'org.ajoberstar.git-publish'             version gitPublishPluginVersion
-        id 'io.github.gradle-nexus.publish-plugin'  version nexusPluginVersion
     }
 }
 
@@ -38,6 +38,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'io.micronaut.gradle',     name: 'micronaut-minimal-plugin',       version: micronautGradlePluginVersion
+        classpath group: 'com.vanniktech',          name: 'gradle-maven-publish-plugin',    version: mavenCentralPublishPluginVersion
     }
 }
 
@@ -67,9 +68,11 @@ projects {
         dirs(['libs']) {
             id 'io.micronaut.minimal.library'
             id 'groovy'
+            id 'com.vanniktech.maven.publish'
         }
         dir('platforms') {
             id 'java-platform'
+            id 'com.vanniktech.maven.publish'
         }
     }
 }
