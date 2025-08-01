@@ -19,10 +19,12 @@ package com.agorapulse.micronaut.facebooksdk;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Named;
 
 @Named("default")
 @ConfigurationProperties("facebook.sdk.app")
+@Requires(property = "facebook.sdk.app.secret")
 public class FacebookApplicationConfiguration extends AbstractFacebookApplicationConfiguration {
 
 }
