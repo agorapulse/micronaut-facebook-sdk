@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GRADLE_OPTS: "-Xmx6g -Xms4g"
-      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
       SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
     steps:
@@ -30,7 +28,7 @@ jobs:
       - name: Release
         env:
           SIGNING_SECRET_KEY_PATH: ${{ steps.write_file.outputs.filePath }}
-        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Pversion=${{ github.ref_name }}
+        run: ./gradlew publishAndReleaseToMavenCentral -Pversion=${{ github.ref_name }} -PmavenCentralUsername=${{ secrets.MAVEN_CENTRAL_USERNAME }} -PmavenCentralPassword=${{ secrets.MAVEN_CENTRAL_PASSWORD }}
   ping:
     name: Notify Upstream Repositories
     runs-on: ubuntu-latest
