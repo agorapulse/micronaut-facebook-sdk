@@ -24,8 +24,6 @@ import jakarta.inject.Named;
 
 @Named("grails")
 @ConfigurationProperties("grails.plugin.facebooksdk.app")
-@Requires(property = "grails.plugin.facebooksdk.app.id")
-@Requires(property = "grails.plugin.facebooksdk.app.secret")
 public class LegacyFacebookApplicationConfiguration extends AbstractFacebookApplicationConfiguration {
 
 }

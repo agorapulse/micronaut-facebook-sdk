@@ -24,7 +24,6 @@ import jakarta.inject.Named;
 
 @Named("default")
 @ConfigurationProperties("facebook.sdk.app")
-@Requires(property = "facebook.sdk.app.id")
 @Requires(property = "facebook.sdk.app.secret")
 public class FacebookApplicationConfiguration extends AbstractFacebookApplicationConfiguration {
 
