@@ -20,6 +20,7 @@ package com.agorapulse.micronaut.facebooksdk.mock;
 import com.agorapulse.micronaut.facebooksdk.DefaultFacebookApplication;
 import com.agorapulse.micronaut.facebooksdk.FacebookApplication;
 import com.agorapulse.micronaut.facebooksdk.FacebookApplicationConfiguration;
+import com.agorapulse.micronaut.facebooksdk.FacebookSdkFactory;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.DefaultJsonMapper;
 import com.restfb.DefaultWebRequestor;
@@ -33,7 +34,10 @@ import io.github.cjstehno.ersatz.cfg.Expectations;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.annotation.Replaces;
 
+import io.micronaut.context.event.ApplicationEventListener;
 import io.micronaut.context.exceptions.BeanInstantiationException;
+import io.micronaut.runtime.context.scope.Refreshable;
+import io.micronaut.runtime.context.scope.refresh.RefreshEvent;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
@@ -50,8 +54,9 @@ import java.util.stream.Collectors;
 import static io.undertow.util.QueryParameterUtils.parseQueryString;
 
 @Singleton
-@Replaces(DefaultFacebookApplication.class)
-public class TestFacebookApplication implements FacebookApplication, Closeable {
+@Refreshable
+@Replaces(value = DefaultFacebookApplication.class, factory = FacebookSdkFactory.class)
+public class TestFacebookApplication implements FacebookApplication, Closeable, ApplicationEventListener<RefreshEvent> {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(TestFacebookApplication.class);
 
@@ -109,10 +114,20 @@ public class TestFacebookApplication implements FacebookApplication, Closeable {
 
     @PreDestroy
     public void close() {
+        if (server == null) {
+            // mockApi hasn't been called
+            return;
+        }
+
         if (!server.verify()) {
             throw new IllegalStateException("The server verification failed");
         }
         server.stop();
+    }
+
+    @Override
+    public void onApplicationEvent(RefreshEvent event) {
+        close();
     }
 
     private static ErsatzServer prepareServer() {

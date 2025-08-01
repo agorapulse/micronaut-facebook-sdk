@@ -21,7 +21,6 @@ import com.agorapulse.testing.fixt.Fixt
 import com.restfb.types.User
 import groovy.transform.CompileDynamic
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import spock.lang.AutoCleanup
 import spock.lang.Specification
 
 import jakarta.inject.Inject
@@ -32,7 +31,7 @@ class TestFacebookApplicationSpec extends Specification {
 
     Fixt fixt = Fixt.create(TestFacebookApplicationSpec)
 
-    @Inject @AutoCleanup TestFacebookApplication facebook
+    @Inject TestFacebookApplication facebook
 
     void 'get me'() {
         given:

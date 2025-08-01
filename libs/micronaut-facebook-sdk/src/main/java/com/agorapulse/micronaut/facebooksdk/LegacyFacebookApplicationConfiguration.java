@@ -19,10 +19,13 @@ package com.agorapulse.micronaut.facebooksdk;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Named;
 
 @Named("grails")
 @ConfigurationProperties("grails.plugin.facebooksdk.app")
+@Requires(property = "grails.plugin.facebooksdk.app.id")
+@Requires(property = "grails.plugin.facebooksdk.app.secret")
 public class LegacyFacebookApplicationConfiguration extends AbstractFacebookApplicationConfiguration {
 
 }
