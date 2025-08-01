@@ -28,7 +28,6 @@ pluginManagement {
         id 'org.kordamp.gradle.guide'               version kordampVersion
         id 'org.kordamp.gradle.coveralls'           version kordampVersion
         id 'org.ajoberstar.git-publish'             version gitPublishPluginVersion
-        id 'com.vanniktech.maven.publish'           version mavenPublishPluginVersion
     }
 }
 
@@ -39,6 +38,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'io.micronaut.gradle',     name: 'micronaut-minimal-plugin',       version: micronautGradlePluginVersion
+        classpath group: 'com.vanniktech',          name: 'gradle-maven-publish-plugin',    version: mavenCentralPublishPluginVersion
     }
 }
 
