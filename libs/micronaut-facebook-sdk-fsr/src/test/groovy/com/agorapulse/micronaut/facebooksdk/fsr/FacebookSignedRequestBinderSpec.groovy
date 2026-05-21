@@ -36,7 +36,7 @@ import spock.lang.AutoCleanup
 import spock.lang.Ignore
 import spock.lang.Specification
 
-import jakarta.annotation.Nullable
+import org.jspecify.annotations.Nullable
 import jakarta.inject.Inject
 
 @MicronautTest

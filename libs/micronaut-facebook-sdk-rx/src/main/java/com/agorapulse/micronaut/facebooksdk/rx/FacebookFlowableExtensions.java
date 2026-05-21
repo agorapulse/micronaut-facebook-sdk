@@ -19,7 +19,7 @@ package com.agorapulse.micronaut.facebooksdk.rx;
 
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
-import io.reactivex.Flowable;
+import io.reactivex.rxjava3.core.Flowable;
 
 import java.util.Collections;
 import java.util.List;

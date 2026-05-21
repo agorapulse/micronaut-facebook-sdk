@@ -17,14 +17,14 @@
  */
 package com.agorapulse.micronaut.facebooksdk.fsr;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.beans.ConstructorProperties;
-import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -32,11 +32,9 @@ import java.util.*;
 public class FacebookSignedRequest {
 
     private static final String HMAC_SHA_256 = "HmacSHA256";
-    private static final ObjectMapper JSON = new ObjectMapper();
-
-    static {
-        JSON.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-    }
+    private static final ObjectMapper JSON = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .build();
 
     public static FacebookSignedRequest parse(String appSecret, String signature)  {
         String[] signedRequestParts = signature.trim().split("\\.");
@@ -62,7 +60,7 @@ public class FacebookSignedRequest {
         // Decode parameters
         try {
             return JSON.readValue(decoder.decode(encodedParameters), FacebookSignedRequest.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Cannot decode signature", e);
         }
     }
@@ -125,7 +123,7 @@ public class FacebookSignedRequest {
             String encodedSignature = encoder.encodeToString(hmacSha256.doFinal(encodedParameters.getBytes()));
 
             return encodeAsUrlSafe(encodedSignature) + "." + encodeAsUrlSafe(encodedParameters);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Cannot render self as JSON", e);
         }
     }

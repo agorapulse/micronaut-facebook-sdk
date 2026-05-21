@@ -17,62 +17,28 @@
  */
 pluginManagement {
     repositories {
-        mavenCentral()
         gradlePluginPortal()
+        maven { url = 'https://agorapulse.jfrog.io/agorapulse/gradle-plugins-releases-local/' }
+        mavenCentral()
     }
     plugins {
-        id 'org.kordamp.gradle.settings'            version kordampVersion
-        id 'org.kordamp.gradle.groovy-project'      version kordampVersion
-        id 'org.kordamp.gradle.checkstyle'          version kordampVersion
-        id 'org.kordamp.gradle.codenarc'            version kordampVersion
-        id 'org.kordamp.gradle.guide'               version kordampVersion
-        id 'org.kordamp.gradle.coveralls'           version kordampVersion
-        id 'org.ajoberstar.git-publish'             version gitPublishPluginVersion
-    }
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath group: 'io.micronaut.gradle',     name: 'micronaut-minimal-plugin',       version: micronautGradlePluginVersion
-        classpath group: 'com.vanniktech',          name: 'gradle-maven-publish-plugin',    version: mavenCentralPublishPluginVersion
+        id 'com.agorapulse.gradle.settings'                    version agorapulseGradlePluginsVersion
+        id 'com.agorapulse.gradle.gradle-enterprise'           version agorapulseGradlePluginsVersion
+        id 'com.agorapulse.gradle.remote-cache'                version agorapulseGradlePluginsVersion
+        id 'com.agorapulse.gradle.groovy-common-configuration' version agorapulseGradlePluginsVersion
+        id 'com.agorapulse.gradle.micronaut-library'           version agorapulseGradlePluginsVersion
+        id 'com.vanniktech.maven.publish'                      version mavenCentralPublishPluginVersion
     }
 }
 
 plugins {
-    id 'org.kordamp.gradle.settings'
-    id 'com.gradle.enterprise' version '3.15.1'
-}
-
-gradleEnterprise {
-    buildScan {
-        publishAlways()
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
-    }
+    id 'com.agorapulse.gradle.settings'
+    id 'com.agorapulse.gradle.gradle-enterprise'
+    id 'com.agorapulse.gradle.remote-cache'
 }
 
 rootProject.name = 'micronaut-facebook-sdk-root'
 
-projects {
-    directories = ['libs', 'docs', 'platforms']
-
-    plugins {
-        dir('docs') {
-            id 'org.kordamp.gradle.guide'
-            id 'org.ajoberstar.git-publish'
-        }
-        dirs(['libs']) {
-            id 'io.micronaut.minimal.library'
-            id 'groovy'
-            id 'com.vanniktech.maven.publish'
-        }
-        dir('platforms') {
-            id 'java-platform'
-            id 'com.vanniktech.maven.publish'
-        }
-    }
+gradleProjects {
+    directories = ['libs', 'platforms']
 }

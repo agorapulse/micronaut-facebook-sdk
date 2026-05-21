@@ -17,8 +17,9 @@
  */
 package com.agorapulse.micronaut.facebooksdk.mock;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.cjstehno.ersatz.cfg.ContentType;
 import io.github.cjstehno.ersatz.cfg.Response;
 
@@ -30,7 +31,7 @@ import java.util.function.Consumer;
 
 public class FacebookApiResponse {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
     public static final String DEFAULT_ERROR_TYPE = "OAuthException";
 
     public static Consumer<Response> just(String json) {
@@ -85,7 +86,7 @@ public class FacebookApiResponse {
     private static String toJson(Object object) {
         try {
             return MAPPER.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Cannot convert " + object + " to JSON");
         }
     }

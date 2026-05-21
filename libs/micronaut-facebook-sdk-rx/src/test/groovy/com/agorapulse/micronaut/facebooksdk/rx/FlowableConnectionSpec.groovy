@@ -22,7 +22,7 @@ import com.restfb.DefaultFacebookClient
 import com.restfb.FacebookClient
 import com.restfb.exception.FacebookException
 import groovy.transform.CompileDynamic
-import io.reactivex.Flowable
+import io.reactivex.rxjava3.core.Flowable
 import spock.lang.Specification
 
 @CompileDynamic

@@ -20,12 +20,12 @@ package com.agorapulse.micronaut.facebooksdk.rx;
 import com.restfb.Connection;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
-import io.reactivex.Emitter;
-import io.reactivex.Flowable;
+import io.reactivex.rxjava3.core.Emitter;
+import io.reactivex.rxjava3.core.Flowable;
 
 import java.util.List;
 
-import static io.reactivex.Flowable.generate;
+import static io.reactivex.rxjava3.core.Flowable.generate;
 
 public class FlowableConnection {
 
