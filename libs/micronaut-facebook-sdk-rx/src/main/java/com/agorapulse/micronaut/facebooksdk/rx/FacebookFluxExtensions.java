@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2025 Agorapulse.
+ * Copyright 2019-2026 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package com.agorapulse.micronaut.facebooksdk.rx;
 
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
-import io.reactivex.Flowable;
+import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class FacebookFlowableExtensions {
+public class FacebookFluxExtensions {
 
 
     /**
@@ -36,8 +36,8 @@ public class FacebookFlowableExtensions {
      * @param connectionType Connection type token.
      * @return An instance of type {@code connectionType} which contains the requested Connection's data.
      */
-    public static <T> Flowable<List<T>> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType) {
-        return fetchFlowable(facebookClient, connection, connectionType, Collections.emptyMap());
+    public static <T> Flux<List<T>> fetchFlux(FacebookClient facebookClient, String connection, Class<T> connectionType) {
+        return fetchFlux(facebookClient, connection, connectionType, Collections.emptyMap());
     }
 
     /**
@@ -49,8 +49,8 @@ public class FacebookFlowableExtensions {
      * @param parameters     URL parameters to include in the API call (optional).
      * @return An instance of type {@code connectionType} which contains the requested Connection's data.
      */
-    public static <T> Flowable<List<T>> fetchFlowable(FacebookClient facebookClient, String connection, Class<T> connectionType, Map<String, Object> parameters) {
-        return FlowableConnection.create(facebookClient, connection, connectionType, buildVariableArgs(parameters));
+    public static <T> Flux<List<T>> fetchFlux(FacebookClient facebookClient, String connection, Class<T> connectionType, Map<String, Object> parameters) {
+        return FluxConnection.create(facebookClient, connection, connectionType, buildVariableArgs(parameters));
     }
 
     private static Parameter[] buildVariableArgs(Map<String, Object> parameters) {
