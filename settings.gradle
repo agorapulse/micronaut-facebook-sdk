@@ -23,18 +23,24 @@ pluginManagement {
     }
     plugins {
         id 'com.agorapulse.gradle.settings'                    version agorapulseGradlePluginsVersion
-        id 'com.agorapulse.gradle.gradle-enterprise'           version agorapulseGradlePluginsVersion
-        id 'com.agorapulse.gradle.remote-cache'                version agorapulseGradlePluginsVersion
         id 'com.agorapulse.gradle.groovy-common-configuration' version agorapulseGradlePluginsVersion
         id 'com.agorapulse.gradle.micronaut-library'           version agorapulseGradlePluginsVersion
         id 'com.vanniktech.maven.publish'                      version mavenCentralPublishPluginVersion
+        id 'com.gradle.develocity'                             version develocityPluginVersion
     }
 }
 
 plugins {
     id 'com.agorapulse.gradle.settings'
-    id 'com.agorapulse.gradle.gradle-enterprise'
-    id 'com.agorapulse.gradle.remote-cache'
+    id 'com.gradle.develocity'
+}
+
+develocity {
+    buildScan {
+        termsOfUseUrl = 'https://gradle.com/terms-of-service'
+        termsOfUseAgree = 'yes'
+        publishing.onlyIf { true }
+    }
 }
 
 rootProject.name = 'micronaut-facebook-sdk-root'
