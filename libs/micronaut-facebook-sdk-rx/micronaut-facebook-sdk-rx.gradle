@@ -30,5 +30,5 @@ java {
 
 dependencies {
     api "com.restfb:restfb:$restfbVersion"
-    api 'io.micronaut.rxjava3:micronaut-rxjava3'
+    api 'io.projectreactor:reactor-core'
 }
