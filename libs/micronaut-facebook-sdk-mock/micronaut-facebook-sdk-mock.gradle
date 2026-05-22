@@ -21,6 +21,8 @@ dependencies {
     api "io.github.cjstehno.ersatz:ersatz:$ersatzVersion"
     api "space.jasan:groovy-closure-support:$groovyClosureSupportVersion"
 
+    compileOnly 'org.apache.groovy:groovy'
+
     implementation 'io.micronaut:micronaut-jackson-databind'
 
     testImplementation "com.agorapulse.testing:fixt:$fixtVersion"

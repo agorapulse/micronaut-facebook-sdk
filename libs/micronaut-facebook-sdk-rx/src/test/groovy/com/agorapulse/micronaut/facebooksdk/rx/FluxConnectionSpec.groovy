@@ -23,6 +23,7 @@ import com.restfb.FacebookClient
 import com.restfb.exception.FacebookException
 import groovy.transform.CompileDynamic
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import spock.lang.Specification
 
 @CompileDynamic
@@ -87,7 +88,7 @@ class FluxConnectionSpec extends Specification {
             0 * _
 
         when:
-            List<String> all = flux.onErrorReturn { Throwable th -> th.message }.collectList().block()
+            List<String> all = flux.onErrorResume { Throwable th -> Mono.just(th.message) }.collectList().block()
 
         then:
             all == ['error']
