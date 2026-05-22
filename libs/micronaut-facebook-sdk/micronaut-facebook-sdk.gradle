@@ -16,5 +16,9 @@
  * limitations under the License.
  */
 dependencies {
+    annotationProcessor 'io.micronaut.validation:micronaut-validation-processor'
+
     api "com.restfb:restfb:$restfbVersion"
+
+    implementation 'io.micronaut.validation:micronaut-validation'
 }
