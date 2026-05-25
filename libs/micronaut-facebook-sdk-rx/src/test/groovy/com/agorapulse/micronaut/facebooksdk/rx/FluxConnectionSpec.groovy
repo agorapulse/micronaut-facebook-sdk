@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2025 Agorapulse.
+ * Copyright 2019-2026 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import com.restfb.DefaultFacebookClient
 import com.restfb.FacebookClient
 import com.restfb.exception.FacebookException
 import groovy.transform.CompileDynamic
-import io.reactivex.Flowable
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import spock.lang.Specification
 
 @CompileDynamic
-class FlowableConnectionSpec extends Specification {
+class FluxConnectionSpec extends Specification {
 
-    void 'automatic pagination with flowable connection'() {
+    void 'automatic pagination with flux connection'() {
         given:
             FacebookClient client = Spy(DefaultFacebookClient)
             Connection<String> first = new Connection<>(
@@ -41,18 +42,18 @@ class FlowableConnectionSpec extends Specification {
             _ * client.fetchConnection('/foo', String) >> first
             _ * client.fetchConnectionPage('https://example.com/foobar', String) >> second
         when:
-            Flowable<String> flowable = FlowableConnection.create(client, '/foo', String).flatMap(Flowable.&fromIterable)
+            Flux<String> flux = FluxConnection.create(client, '/foo', String).flatMap(Flux.&fromIterable)
         then:
             0 * _
 
         when:
-            List<String> all = flowable.toList().blockingGet()
+            List<String> all = flux.collectList().block()
 
         then:
             all == ['one', 'two', 'three', 'four', 'five', 'six']
     }
 
-    void 'automatic pagination with flowable connection from groovy'() {
+    void 'automatic pagination with flux connection from groovy'() {
         given:
             FacebookClient client = Spy(DefaultFacebookClient)
             Connection<String> first = new Connection<>(
@@ -65,12 +66,12 @@ class FlowableConnectionSpec extends Specification {
             _ * client.fetchConnection('/foo', String) >> first
             _ * client.fetchConnectionPage('https://example.com/foobar', String) >> second
         when:
-            Flowable<String> flowable = client.fetchFlowable('/foo', String).flatMap(Flowable.&fromIterable)
+            Flux<String> flux = client.fetchFlux('/foo', String).flatMap(Flux.&fromIterable)
         then:
             0 * _
 
         when:
-            List<String> all = flowable.toList().blockingGet()
+            List<String> all = flux.collectList().block()
 
         then:
             all == ['one', 'two', 'three', 'four', 'five', 'six']
@@ -82,12 +83,12 @@ class FlowableConnectionSpec extends Specification {
 
             _ * client.fetchConnection('/foo', String) >> { throw new FacebookException('error') { } }
         when:
-            Flowable<String> flowable = FlowableConnection.create(client, '/foo', String).flatMap(Flowable.&fromIterable)
+            Flux<String> flux = FluxConnection.create(client, '/foo', String).flatMap(Flux.&fromIterable)
         then:
             0 * _
 
         when:
-            List<String> all = flowable.onErrorReturn { Throwable th -> th.message }.toList().blockingGet()
+            List<String> all = flux.onErrorResume { Throwable th -> Mono.just(th.message) }.collectList().block()
 
         then:
             all == ['error']

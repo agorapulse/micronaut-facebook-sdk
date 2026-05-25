@@ -11,7 +11,7 @@ implementation 'com.agorapulse:micronaut-facebook-sdk:{version}'
 // grails support
 implementation 'com.agorapulse:micronaut-facebook-sdk-grails:{version}'
 
-// flowable connection support
+// flux connection support
 implementation 'com.agorapulse:micronaut-facebook-sdk-rx:{version}'
 
 // facebook stored request support
@@ -87,16 +87,16 @@ public class MyJavaService {
     /**
      * Fetches the recent post - requires micronaut-facebook-sdk-rx.
      * @param token Facebook API token
-     * @return Flowable iterating over the recent posts.
+     * @return Flux iterating over the recent posts.
      */
-    public Flowable<List<Post>> postFlowable(String token) {
+    public Flux<List<Post>> postFlux(String token) {
         FacebookClient client = fb.createClient(token);
-        return FlowableConnection.create(client, "/me/posts", Post.class, DEFAULT_POST_PARAMS);
+        return FluxConnection.create(client, "/me/posts", Post.class, DEFAULT_POST_PARAMS);
     }
 }
 ----
 
-If you are using RxJava you can use `micronaut-facebook-sdk-rx` which provides `FlowableConnection` to create `Flowable` wrapping `com.restfb.Connection` to simplify pagination.
+If you want a reactive interface over Facebook pagination, `micronaut-facebook-sdk-rx` provides `FluxConnection` to create a Project Reactor `Flux` wrapping `com.restfb.Connection`.
 
 See https://restfb.com/documentation/ for further reference.
 
@@ -105,7 +105,7 @@ See https://restfb.com/documentation/ for further reference.
 This library provides out-of-box integration with Groovy language. There are basically two additions to the `FacebookClient`:
 
 1. Ability to supply parameters as `Map<String, Object>`
-2. Ability to create `Flowable<List<T>>` directly on `FacebookClient` object
+2. Ability to create `Flux<List<T>>` directly on `FacebookClient` object
 
 [source,groovy]
 ----
@@ -130,10 +130,10 @@ class MyGroovyService {
     /**
      * Fetches the recent posts - requires micronaut-facebook-sdk-rx.
      * @param token Facebook API token
-     * @return Flowable iterating over the recent posts.
+     * @return Flux iterating over the recent posts.
      */
-    Flowable<List<Post>> postFlowable(String token) {
-        return fb.createClient(token).fetchFlowable(client, "/me/posts", Post, [fields: 'id,message'])
+    Flux<List<Post>> postFlux(String token) {
+        return fb.createClient(token).fetchFlux(client, "/me/posts", Post, [fields: 'id,message'])
     }
 }
 ----

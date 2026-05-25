@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2025 Agorapulse.
+ * Copyright 2019-2026 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,224 +16,61 @@
  * limitations under the License.
  */
 plugins {
-    id 'org.kordamp.gradle.groovy-project'
-    id 'org.kordamp.gradle.checkstyle'
-    id 'org.kordamp.gradle.codenarc'
-    id 'org.kordamp.gradle.coveralls'
+    id 'com.agorapulse.gradle.root-project'
 }
 
-if (!project.hasProperty('mavenCentralUsername'))       ext.mavenCentralUsername            = System.getenv('MAVEN_CENTRAL_USERNAME') ?: '**UNDEFINED**'
-if (!project.hasProperty('mavenCentralPassword'))       ext.mavenCentralPassword            = System.getenv('MAVEN_CENTRAL_PASSWORD') ?: '**UNDEFINED**'
-if (!project.hasProperty('signingInMemoryKeyId'))       ext.signingInMemoryKeyId            = System.getenv('SIGNING_KEY_ID') ?: '**UNDEFINED**'
-if (!project.hasProperty('signingInMemoryKeyPassword')) ext.signingInMemoryKeyPassword      = System.getenv('SIGNING_PASSWORD') ?: '**UNDEFINED**'
-if (!project.hasProperty('signingInMemoryKey'))         ext.signingInMemoryKey              = System.getenv('SIGNING_SECRET_KEY_PATH') ? rootProject.file(System.getenv('SIGNING_SECRET_KEY_PATH')).text : '**UNDEFINED**'
-
-
-config {
-    release = (rootProject.findProperty('release') ?: false).toBoolean()
-
-    info {
-        name        = 'Micronaut Facebook SDK'
-        vendor      = 'Agorapulse'
-        description = 'Micronaut Facebook SDK'
-
-        links {
-            website      = 'https://github.com/' + slug
-            issueTracker = 'https://github.com/' + slug + '/issues'
-            scm          = 'https://github.com/' + slug + '.git'
-        }
-
-        people {
-            person {
-                id    = 'musketyr'
-                name  = 'Vladimir Orany'
-                roles = ['developer']
-            }
-        }
-
-        repositories {
-            repository {
-                name = 'localReleases'
-                url  = '' + project.rootProject.buildDir + '/repos/local/releases'
-            }
-            repository {
-                name = 'localSnapshot'
-                url  = '' + project.rootProject.buildDir + '/repos/local/snapshot'
-            }
-        }
-    }
-
-    licensing {
-        licenses {
-            license {
-                id = 'Apache-2.0'
-            }
-        }
-    }
-
-    publishing {
-        enabled = false
-        signing {
-            enabled = false
-        }
-    }
-
-    artifacts {
-        source {
-            enabled = false
-        }
-    }
-
-    quality {
-        checkstyle {
-            ignoreFailures  = false
-            toolVersion     = '8.27'
-        }
-
-        codenarc {
-            ignoreFailures  = false
-            toolVersion     = '1.5'
-        }
-    }
-
-    docs {
-        javadoc {
-            enabled = false
-            autoLinks {
-                enabled = false
-            }
-            aggregate {
-                enabled = false
-            }
-        }
-        groovydoc {
-            enabled = false
-            aggregate {
-                enabled = false
-            }
-        }
-    }
-
-}
-
+if (!project.hasProperty('mavenCentralUsername'))       ext.mavenCentralUsername       = System.getenv('MAVEN_CENTRAL_USERNAME') ?: '**UNDEFINED**'
+if (!project.hasProperty('mavenCentralPassword'))       ext.mavenCentralPassword       = System.getenv('MAVEN_CENTRAL_PASSWORD') ?: '**UNDEFINED**'
+if (!project.hasProperty('signingInMemoryKeyId'))       ext.signingInMemoryKeyId       = System.getenv('SIGNING_KEY_ID') ?: '**UNDEFINED**'
+if (!project.hasProperty('signingInMemoryKeyPassword')) ext.signingInMemoryKeyPassword = System.getenv('SIGNING_PASSWORD') ?: '**UNDEFINED**'
+if (!project.hasProperty('signingInMemoryKey'))         ext.signingInMemoryKey         = System.getenv('SIGNING_SECRET_KEY_PATH') ? rootProject.file(System.getenv('SIGNING_SECRET_KEY_PATH')).text : '**UNDEFINED**'
 
 allprojects {
     repositories {
         mavenCentral()
     }
-
-    license {
-        exclude '**/*.json'
-        exclude '**/*.yml'
-        exclude '**/*.txt'
-        exclude '**/*.gdsl'
-        exclude '**/ConsoleSpec/*.groovy'
-    }
 }
 
 gradleProjects {
     subprojects {
-        dirs(['libs']) { Project subproject ->
+        dirs(['libs']) {
             micronaut {
                 importMicronautPlatform = true
-                testRuntime 'spock2'
+                testRuntime 'spock'
                 processing {
                     incremental false
                 }
             }
 
-            java {
-                toolchain {
-                    languageVersion.set(JavaLanguageVersion.of(17))
-                }
-            }
-
-            repositories {
-                mavenCentral()
-            }
-
-            // location independent tests (useful for stable CI builds)
-            tasks.withType(Test){
-                useJUnitPlatform()
-
-                systemProperty 'user.timezone', 'UTC'
-                systemProperty 'user.language', 'en'
-            }
-
-            tasks.withType(JavaCompile) {
-                options.encoding = 'UTF-8'
-                options.compilerArgs.add('-parameters')
-            }
-
-            tasks.withType(GroovyCompile) {
-                groovyOptions.forkOptions.jvmArgs.add('-Dgroovy.parameters=true')
-            }
-
             dependencies {
-                annotationProcessor 'io.micronaut:micronaut-inject-java'
-                annotationProcessor 'io.micronaut.validation:micronaut-validation'
-
-                implementation 'io.micronaut:micronaut-core'
-                implementation 'io.micronaut:micronaut-inject'
-                implementation 'io.micronaut.validation:micronaut-validation'
-                implementation 'io.micronaut:micronaut-runtime'
-
-                compileOnly 'io.micronaut:micronaut-inject-groovy'
-
-                // testImplementation "com.agorapulse:micronaut-log4aws:1.2.6-micronaut-${micronautVersion[0]}.0"
-                testImplementation 'io.micronaut:micronaut-inject-groovy'
                 testImplementation 'io.micronaut.test:micronaut-test-spock'
-                testImplementation 'io.micronaut.test:micronaut-test-junit5' // otherwise we get failure in spock
-                testImplementation 'net.bytebuddy:byte-buddy:1.10.1'
-                testImplementation 'org.objenesis:objenesis:3.0.1'
             }
 
-            // useful for IntelliJ
-            task cleanOut(type: Delete) {
-                delete file('out')
-            }
-
-            clean.dependsOn cleanOut
-
-            processResources {
-                filesMatching('**/org.codehaus.groovy.runtime.ExtensionModule') {
-                    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [VERSION: version])
-                }
-            }
-
-            jar {
-                manifest.attributes provider: 'gradle'
-            }
-
-            dependencies {
-                testImplementation group: 'org.spockframework', name: 'spock-core', version: spockVersion
-            }
-
-            project(':micronaut-facebook-bom').dependencies.constraints.api subproject
+            rootProject.project(':micronaut-facebook-bom').dependencies.constraints.api project
         }
 
-        dirs(['libs', 'platforms']) { Project subproject ->
+        dirs(['libs', 'platforms']) {
             mavenPublishing {
                 publishToMavenCentral(true)
                 signAllPublications()
 
                 pom {
-                    name = subproject.name.contains('bom') ? "Micronaut Facebook SDK BOM" : "Micronaut Facebook SDK"
-                    description = subproject.name.contains('bom') ? 'Micronaut Facebook SDK Bill of Materials' : 'Micronaut Facebook SDK'
-                    inceptionYear = "2019"
+                    name = project.name.contains('bom') ? 'Micronaut Facebook SDK BOM' : 'Micronaut Facebook SDK'
+                    description = project.name.contains('bom') ? 'Micronaut Facebook SDK Bill of Materials' : 'Micronaut Facebook SDK'
+                    inceptionYear = '2019'
                     url = "https://github.com/${slug}"
                     licenses {
                         license {
-                            name = "The Apache License, Version 2.0"
-                            url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                            distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                            name = 'The Apache License, Version 2.0'
+                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
                     }
                     developers {
                         developer {
-                            id = "musketyr"
-                            name = "Vladimir Orany"
-                            url = "https://github.com/musketyr/"
+                            id = 'musketyr'
+                            name = 'Vladimir Orany'
+                            url = 'https://github.com/musketyr/'
                         }
                     }
                     scm {
@@ -251,5 +88,3 @@ gradleProjects {
         }
     }
 }
-
-check.dependsOn('aggregateCheckstyle', 'aggregateCodenarc', 'aggregateAllTestReports', 'coveralls')

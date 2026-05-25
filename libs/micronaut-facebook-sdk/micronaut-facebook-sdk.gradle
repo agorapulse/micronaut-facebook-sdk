@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2025 Agorapulse.
+ * Copyright 2019-2026 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 dependencies {
-    api "com.restfb:restfb:$restfbVersion"
-}
+    annotationProcessor 'io.micronaut.validation:micronaut-validation-processor'
 
+    api "com.restfb:restfb:$restfbVersion"
+
+    implementation 'io.micronaut.validation:micronaut-validation'
+}

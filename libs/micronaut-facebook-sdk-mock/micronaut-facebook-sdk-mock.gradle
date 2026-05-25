@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2025 Agorapulse.
+ * Copyright 2019-2026 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ dependencies {
     api "io.github.cjstehno.ersatz:ersatz-groovy:$ersatzVersion"
     api "io.github.cjstehno.ersatz:ersatz:$ersatzVersion"
     api "space.jasan:groovy-closure-support:$groovyClosureSupportVersion"
+
+    compileOnly 'org.apache.groovy:groovy'
 
     implementation 'io.micronaut:micronaut-jackson-databind'
 

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2025 Agorapulse.
+ * Copyright 2019-2026 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,31 +20,29 @@ package com.agorapulse.micronaut.facebooksdk.rx;
 import com.restfb.Connection;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
-import io.reactivex.Emitter;
-import io.reactivex.Flowable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.SynchronousSink;
 
 import java.util.List;
 
-import static io.reactivex.Flowable.generate;
+public class FluxConnection {
 
-public class FlowableConnection {
-
-    private FlowableConnection() {
+    private FluxConnection() {
         // disallow instantiation
     }
 
-    public static <T> Flowable<List<T>> create(FacebookClient client, String connection, Class<T> connectionType, Parameter... parameters) {
-        return generate(() -> null, (String nextPage, Emitter<List<T>> emitter) -> {
+    public static <T> Flux<List<T>> create(FacebookClient client, String connection, Class<T> connectionType, Parameter... parameters) {
+        return Flux.generate(() -> null, (String nextPage, SynchronousSink<List<T>> sink) -> {
             Connection<T> conn = nextPage == null
                     ? client.fetchConnection(connection, connectionType, parameters)
                     : client.fetchConnectionPage(nextPage, connectionType);
 
-            emitter.onNext(conn.getData());
+            sink.next(conn.getData());
 
             if (conn.hasNext()) {
                 return conn.getNextPageUrl();
             } else {
-                emitter.onComplete();
+                sink.complete();
                 return null;
             }
         });
