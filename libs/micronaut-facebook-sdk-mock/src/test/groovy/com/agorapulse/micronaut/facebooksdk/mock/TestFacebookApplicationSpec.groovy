@@ -18,6 +18,7 @@
 package com.agorapulse.micronaut.facebooksdk.mock
 
 import com.agorapulse.testing.fixt.Fixt
+import com.restfb.Version
 import com.restfb.types.User
 import groovy.transform.CompileDynamic
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
@@ -36,7 +37,7 @@ class TestFacebookApplicationSpec extends Specification {
     void 'get me'() {
         given:
             facebook.mockApi {
-                GET('/v16.0/me') {
+                GET("/${Version.LATEST.urlElement}/me") {
                     just fixt.readText('me.json')
                 }
             }

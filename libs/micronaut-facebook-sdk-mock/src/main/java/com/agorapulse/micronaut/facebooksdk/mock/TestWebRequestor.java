@@ -17,7 +17,6 @@
  */
 package com.agorapulse.micronaut.facebooksdk.mock;
 
-import com.restfb.DebugHeaderInfo;
 import com.restfb.WebRequestor;
 
 import java.util.Map;
@@ -57,11 +56,6 @@ public class TestWebRequestor implements WebRequestor {
         } catch (Exception e) {
             throw new IllegalStateException("Cannot DELETE " + testRequest.getUrl(), e);
         }
-    }
-
-    @Override
-    public DebugHeaderInfo getDebugHeaderInfo() {
-        return delegate.getDebugHeaderInfo();
     }
 
     private String jailUrl(String url) {
