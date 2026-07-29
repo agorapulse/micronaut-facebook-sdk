@@ -68,7 +68,7 @@ public class DefaultFacebookApplication implements FacebookApplication {
      * @return a Facebook Graph API client with the given {@code accessToken}.
      */
     public FacebookClient createClient(String accessToken, String appSecret, Version apiVersion) {
-        return new DefaultFacebookClient(accessToken, appSecret, apiVersion);
+        return SecretSafeFacebookClient.wrap(new DefaultFacebookClient(accessToken, appSecret, apiVersion));
     }
 
     /**
