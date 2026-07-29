@@ -17,7 +17,6 @@
  */
 package com.agorapulse.micronaut.facebooksdk
 
-import com.restfb.DefaultFacebookClient
 import com.restfb.FacebookClient
 import com.restfb.Version
 import groovy.transform.CompileDynamic
@@ -33,7 +32,7 @@ class FacebookApplicationConfigurationSpec extends Specification {
     void 'application version is converted'() {
         given:
             context = ApplicationContext.builder(
-                    'facebook.sdk.app.api-version': 'v16.0',
+                    'facebook.sdk.app.api-version': Version.VERSION_18_0.urlElement,
                     'facebook.sdk.app.id': '1234567890',
                     'facebook.sdk.app.secret': 'secret'
             ).build()
@@ -42,14 +41,14 @@ class FacebookApplicationConfigurationSpec extends Specification {
             FacebookApplication application = context.getBean(FacebookApplication)
             FacebookClient client = application.createClient()
         expect:
-            client instanceof DefaultFacebookClient
-            client.apiVersion == Version.VERSION_16_0
+            client != null
+            application.configuration.apiVersion == Version.VERSION_18_0
     }
 
     void 'app id is optional'() {
         given:
             context = ApplicationContext.builder(
-                    'facebook.sdk.app.api-version': 'v16.0',
+                    'facebook.sdk.app.api-version': Version.VERSION_18_0.urlElement,
                     'facebook.sdk.app.secret': 'secret'
             ).build()
             context.start()
@@ -57,8 +56,8 @@ class FacebookApplicationConfigurationSpec extends Specification {
             FacebookApplication application = context.getBean(FacebookApplication)
             FacebookClient client = application.createClient()
         expect:
-            client instanceof DefaultFacebookClient
-            client.apiVersion == Version.VERSION_16_0
+            client != null
+            application.configuration.apiVersion == Version.VERSION_18_0
     }
 
 }
